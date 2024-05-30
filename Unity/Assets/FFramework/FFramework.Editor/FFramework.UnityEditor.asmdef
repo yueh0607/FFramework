@@ -1,0 +1,22 @@
+{
+    "name": "FFramework.UnityEditor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:eaaf0d6d4e679924f829206fc4e3d4ec",
+        "GUID:0086669723cff0b48b5ee5d90ca569ce",
+        "GUID:b4e6504b29460f540a5b71dd0f57bf4d",
+        "GUID:5c1ff9bd975acec488150743d53a93ca",
+        "GUID:c5ecc461727906345a35491a0440694f"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": true,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

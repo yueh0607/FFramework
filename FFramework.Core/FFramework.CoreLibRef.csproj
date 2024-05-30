@@ -1,0 +1,26 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>net8.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<Compile Include="..\Unity\Assets\FFramework\FFramework.Runtime\FFramework.Core\**\*.cs">
+			<Link>%(RecursiveDir)%(FileName)%(Extension)</Link>
+		</Compile>
+	</ItemGroup>
+
+	  <!-- 引用普通的二进制 DLL 文件 -->
+    <ItemGroup>
+        <Reference Include="..\Unity\Assets\FFramework\FFramework.Runtime\FFramework.Core\ThirdParty\DynamicLinkLibrary\Lib\**\*.dll" />
+    </ItemGroup>
+
+	<ItemGroup>
+		<ProjectReference Include="..\FEventSourceGenerator\FEventSourceGenerator.csproj"
+						  OutputItemType="Analyzer"
+							ReferenceOutputAssembly="false"/>
+	</ItemGroup>
+
+</Project>

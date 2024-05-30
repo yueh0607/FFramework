@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+    <PropertyGroup>
+        <TargetFramework>net7.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <IsPackable>false</IsPackable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Microsoft.TypeScript.MSBuild" Version="4.9.0-beta">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <CompilerVisibleProperty Include="MemoryPackGenerator_TypeScriptOutputDirectory" />
+        <CompilerVisibleProperty Include="MemoryPackGenerator_TypeScriptImportExtension" />
+        <CompilerVisibleProperty Include="MemoryPackGenerator_TypeScriptConvertPropertyName" />
+        <CompilerVisibleProperty Include="MemoryPackGenerator_TypeScriptEnableNullableTypes" />
+    </ItemGroup>
+    <PropertyGroup>
+        <MemoryPackGenerator_TypeScriptOutputDirectory>$(MSBuildProjectDirectory)\wwwroot\js\memorypack</MemoryPackGenerator_TypeScriptOutputDirectory>
+        <MemoryPackGenerator_TypeScriptImportExtension>.js</MemoryPackGenerator_TypeScriptImportExtension>
+        <!--<MemoryPackGenerator_TypeScriptConvertPropertyName>false</MemoryPackGenerator_TypeScriptConvertPropertyName>-->
+        <!--<MemoryPackGenerator_TypeScriptEnableNullableTypes>true</MemoryPackGenerator_TypeScriptEnableNullableTypes>-->
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\MemoryPack.AspNetCoreMvcFormatter\MemoryPack.AspNetCoreMvcFormatter.csproj" />
+        <ProjectReference Include="..\..\src\MemoryPack.Core\MemoryPack.Core.csproj" />
+        <ProjectReference Include="..\..\src\MemoryPack.Generator\MemoryPack.Generator.csproj">
+            <OutputItemType>Analyzer</OutputItemType>
+            <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+        </ProjectReference>
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,105 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Numerics" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    var unmanagedTypes = new Type[]
+    {
+        typeof(sbyte),
+        typeof(byte),
+        typeof(short),
+        typeof(ushort),
+        typeof(int),
+        typeof(uint),
+        typeof(long),
+        typeof(ulong),
+        typeof(char),
+        typeof(float),
+        typeof(double),
+        typeof(decimal),
+        typeof(bool),
+        typeof(IntPtr),
+        typeof(UIntPtr),
+
+        typeof(DateTime),
+        typeof(DateTimeOffset),
+        typeof(TimeSpan),
+        typeof(Guid),
+    };
+    var unmanagedTypeNames = unmanagedTypes
+        .Select(x => x.Name)
+        .Concat(new []
+        {
+            // System.Numerics(BigInteger is not unmanaged type)
+            "Complex",
+            "Plane",
+            "Quaternion",
+            "Matrix3x2",
+            "Matrix4x4",
+            "Vector2",
+            "Vector3",
+            "Vector4",
+        });
+
+    var net7UnmanagedTypeNames = new[]
+    {
+        "Rune",
+        "DateOnly",
+        "TimeOnly",
+        "Half",
+        "Int128",
+        "UInt128",
+    };
+
+    var knownTypes = new Type[]
+    {
+        typeof(string),
+        typeof(Version),
+        typeof(Uri),
+    };
+
+    var knownTypesNames = knownTypes
+        .Select(x => x.Name)
+        .Concat(new []
+        {
+            "TimeZoneInfo",
+            "BigInteger",
+            "BitArray",
+            "StringBuilder",
+            "Type",
+            "CultureInfo",
+        });
+#>
+using MemoryPack.Formatters;
+using System.Collections;
+using System.Globalization;
+using System.Text;
+using System.Numerics;
+
+namespace MemoryPack;
+
+public static partial class MemoryPackFormatterProvider
+{
+    internal static void RegisterWellKnownTypesFormatters()
+    {
+<# foreach(var item in unmanagedTypeNames) { #>
+        Register(new UnmanagedFormatter<<#= item #>>());
+        Register(new UnmanagedArrayFormatter<<#= item #>>());
+        Register(new NullableFormatter<<#= item #>>());
+<# } #>
+#if NET7_0_OR_GREATER
+<# foreach(var item in net7UnmanagedTypeNames) { #>
+        Register(new UnmanagedFormatter<<#= item #>>());
+        Register(new UnmanagedArrayFormatter<<#= item #>>());
+        Register(new NullableFormatter<<#= item #>>());
+<# } #>
+#endif
+<# foreach(var item in knownTypesNames) { #>
+        Register(new <#= item #>Formatter());
+        Register(new ArrayFormatter<<#= item #>>());
+<# } #>
+    }
+}

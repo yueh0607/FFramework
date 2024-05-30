@@ -1,0 +1,21 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<script type="module">
+    import { test } from "./js/file.js";
+    import { test2 } from "./js/file.js";
+    import { hoge } from "./js/file.js";
+    import { huga } from "./js/file.js";
+
+    //hoge();
+    //huga();
+    test();
+    test2();
+</script>
+
+<div class="text-center">
+    <input type="button" value="button" onclick="do()">
+</div>

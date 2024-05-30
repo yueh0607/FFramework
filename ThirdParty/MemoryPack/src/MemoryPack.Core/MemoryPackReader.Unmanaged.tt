@@ -1,0 +1,39 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+    string MakeT(int count) => string.Join(", ", Enumerable.Range(1, count).Select(x => $"T{x}"));
+    string MakeArgs(int count) => string.Join(", ", Enumerable.Range(1, count).Select(x => $"out T{x} value{x}"));
+    string MakeWhere(int count) => string.Join("\r\n        ", Enumerable.Range(1, count).Select(x => $"where T{x} : unmanaged"));
+    string MakeSize(int count) => string.Join(" + ", Enumerable.Range(1, count).Select(x => $"Unsafe.SizeOf<T{x}>()"));
+#>
+using System.Buffers;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+
+namespace MemoryPack;
+
+public ref partial struct MemoryPackReader
+{
+<# foreach(var dangerous in new[] { false, true }) { #>
+<# for(var i = 1; i < 16; i++ ) { #>
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
+    public void <#= dangerous ? "Dangerous" : "" #>ReadUnmanaged<<#= MakeT(i) #>>(<#= MakeArgs(i) #>)
+<# if(!dangerous) { #>
+        <#= MakeWhere(i) #>
+<# } #>
+    {
+        var size = <#= MakeSize(i) #>;
+        ref var spanRef = ref GetSpanReference(size);
+        value1 = Unsafe.ReadUnaligned<T1>(ref spanRef);
+<# for(var j = 2; j <= i; j++) { #>
+        value<#= j #> = Unsafe.ReadUnaligned<T<#= j #>>(ref Unsafe.Add(ref spanRef, <#= MakeSize(j - 1) #>));
+<# } #>
+        Advance(size);
+    }
+
+<# } } #>
+}
