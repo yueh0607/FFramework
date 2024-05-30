@@ -15,5 +15,9 @@ namespace FFramework
         {
             
         }
+
+        private LinkedList<IPanel> m_OpeningPanelStack = new LinkedList<IPanel>();
+      
+
     }
 }

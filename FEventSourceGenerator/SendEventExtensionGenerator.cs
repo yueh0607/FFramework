@@ -192,6 +192,7 @@ public class SendEventExtensionGenerator : ISourceGenerator
         string publisherName = $"publisher_3_3_8184";
         string convertObjName = $"convertObj_3_3_8184";
         string genericConstName = "M_T_OBJ3364";
+
         string extensionMethodClass = $@"
 using global::System;
 using {namespaceName};

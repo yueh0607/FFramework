@@ -94,9 +94,9 @@ namespace FFramework
             // do nothing
         }
 
-        public readonly void SetResult()
+        public readonly void SetResult(T result)
         {
-            ((ISucceedCallback)m_FTask.GetAwaiter()).SetSucceed();
+            ((ISucceedCallback<T>)m_FTask.GetAwaiter()).SetSucceed(result);
         }
 
         public readonly void SetException(System.Exception exception)

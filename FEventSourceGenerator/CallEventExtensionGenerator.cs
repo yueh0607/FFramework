@@ -120,6 +120,7 @@ public class CallEventExtensionGenerator : ISourceGenerator
         string publisherName = $"publisher_3_3_8184";
         string posName = $"___688_pos_5887_4531_2";
         string convertObjName = $"convertObj_3_3_8184";
+        string genericConstName = "M_T_OBJ3364";
 
         // Generate the extension method static class
         string extensionMethodClass = $@"
@@ -129,7 +130,7 @@ using {namespaceName};
 
 namespace FFramework
 {{
-    public static class IMyCallPublishExtensions
+    public static class {interfaceName}CallPublishExtensions
     {{
         [System.Runtime.CompilerServices.MethodImpl(System.Runtime.CompilerServices.MethodImplOptions.AggressiveInlining)]
         public static {returnType} Call(this object {objName}, {signature})

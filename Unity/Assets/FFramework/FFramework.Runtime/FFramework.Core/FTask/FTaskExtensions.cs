@@ -88,7 +88,8 @@ namespace FFramework
 
         public static FCatchTokenTask CatchToken()
         {
-            return Envirment.Current.GetModule<PoolModule>().Get<FCatchTokenTask, FCatchTokenTask.Poolable>();
+            return Envirment.Current.GetModule<PoolModule>()
+                .Get<FCatchTokenTask, FCatchTokenTask.Poolable>();
         }
 
         public static FTask LockAsset(object asset)
