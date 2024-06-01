@@ -9,7 +9,7 @@ namespace FFramework
     {
         public static FCatchTokenTask CompletedTask => Envirment.Current.GetModule<PoolModule>().Get<FCatchTokenTask, FCatchTokenTask.Poolable>();
 
-        public static FTask Delay(TimeSpan delayTime,ETimerLoop loop=ETimerLoop.Update)
+        public static FTask Delay(TimeSpan delayTime, ETimerLoop loop = ETimerLoop.Update)
         {
             DelayPromise timer = Envirment.Current.GetModule<PoolModule>().Get<DelayPromise, DelayPromise.Poolable>();
             FTask task = Envirment.Current.GetModule<PoolModule>().Get<FTask, FTask.Poolable>();
@@ -129,28 +129,20 @@ namespace FFramework
         public static void Forget(this FTask task, FCancellationTokenHolder source)
         {
             ((IFTaskAwaiter)task.GetAwaiter()).SetToken(source);
-            task.CurrentAwaiter.SetToken(source);
             Forget(task);
         }
         public static void Forget(this FTask task)
         {
-            if (task.CurrentAwaiter != null && task.CurrentAwaiter is ISyncAwaiter syncAwaiter)
-            {
-                syncAwaiter.SetSucceed();
-            }
+            task.GetAwaiter().SetSyncSucceed();
         }
         public static void Forget<T>(this FTask<T> task, FCancellationTokenHolder tokenHolder)
         {
             ((IFTaskAwaiter)task.GetAwaiter()).SetToken(tokenHolder);
-            task.CurrentAwaiter.SetToken(tokenHolder);
             Forget<T>(task);
         }
         public static void Forget<T>(this FTask<T> task)
         {
-            if (task.CurrentAwaiter != null && task.CurrentAwaiter is ISyncAwaiter syncAwaiter)
-            {
-                syncAwaiter.SetSucceed();
-            }
+            task.GetAwaiter().SetSyncSucceed();
         }
         public static FTask ToFTask(this Task task, CancellationTokenSource tokenSource = null)
         {
@@ -174,6 +166,6 @@ namespace FFramework
             return fTask;
         }
 
-    
+
     }
 }

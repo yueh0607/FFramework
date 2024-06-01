@@ -4,7 +4,7 @@ using System.Runtime.ExceptionServices;
 
 namespace FFramework
 {
-    public interface IFTaskAwaiter : ICriticalNotifyCompletion
+    public interface IFTaskAwaiter : ICriticalNotifyCompletion,IAsyncMachineCurrent
     {
         bool IsCompleted { get; }
 
@@ -12,7 +12,8 @@ namespace FFramework
 
         FTaskStatus Status { get; }
 
-
+        void SetSyncSucceed();
+        
         void SetFailed(ExceptionDispatchInfo exceptionDispatchInfo);
 
         void SetCanceled();

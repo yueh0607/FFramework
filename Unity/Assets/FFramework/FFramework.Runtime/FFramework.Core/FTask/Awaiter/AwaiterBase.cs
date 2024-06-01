@@ -6,6 +6,29 @@ namespace FFramework
     public abstract class AwaiterBase : FUnit, IFTaskAwaiter
     {
 
+        //可能被使用（表示当前MethodBuilder所等待的Awaiter）,也可能是null
+        private IFTaskAwaiter m_CurrentAwaiter { get; set; }
+        public IFTaskAwaiter CurrentAwaiter
+        {
+            get => m_CurrentAwaiter;
+            set => m_CurrentAwaiter = value;
+        }
+
+
+        public void SetSyncSucceed()
+        {
+            IFTaskAwaiter NowAwaiter = this;
+            while (NowAwaiter != null)
+            {
+                if (NowAwaiter is ISyncAwaiter syncAwaiter)
+                {
+                    syncAwaiter.SetSucceed();
+                }
+                NowAwaiter = NowAwaiter.CurrentAwaiter;
+            }
+        }
+
+
         public bool IsCompleted { get; protected set; } = false;
 
         protected System.Object m_ContinuationOrExceptionDispatchInfo = null;
@@ -42,6 +65,11 @@ namespace FFramework
             if (m_TokenHolder != null)
                 Envirment.Current.GetModule<PoolModule>().Set<FCancellationTokenHolder, FCancellationTokenHolder.Poolable>(m_TokenHolder);
             m_TokenHolder = token;
+
+            if(CurrentAwaiter != null)
+            {
+                CurrentAwaiter.SetToken(token);
+            }
         }
         public void SetFailed(ExceptionDispatchInfo exceptionDispatchInfo)
         {
@@ -97,5 +125,7 @@ namespace FFramework
         }
 
         protected abstract void Recycle(IFTask task);
+
+
     }
 }

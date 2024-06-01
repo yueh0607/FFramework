@@ -3,7 +3,8 @@
 namespace FFramework
 {
     [AsyncMethodBuilder(typeof(FTaskAsyncMethodBuilder))]
-    public partial class FTask : FUnit, IFTask
+    public partial class FTask : FUnit, IFTask,IAsyncMachineCurrent
+
     {
         private FTaskAwaiter m_Awaiter;
 
@@ -14,8 +15,12 @@ namespace FFramework
         IFTaskFlow IFTask.Flow => m_TaskFlow;
 
         //可能被使用（表示当前MethodBuilder所等待的Awaiter）,也可能是null
-        internal IFTaskAwaiter CurrentAwaiter { get; set; }
-
+        private IFTaskAwaiter m_CurrentAwaiter { get; set; }
+        IFTaskAwaiter IAsyncMachineCurrent.CurrentAwaiter
+        {
+            get=> m_CurrentAwaiter;
+            set => m_CurrentAwaiter = value;
+        }
         internal void SetFlow(IFTaskFlow flow)
         {
             m_TaskFlow = flow;
@@ -67,11 +72,7 @@ namespace FFramework
 
         IFTaskFlow IFTask.Flow => m_TaskFlow;
 
-        //可能被使用（表示当前MethodBuilder所等待的Awaiter）,也可能是null
-        internal IFTaskAwaiter CurrentAwaiter { get; set; }
-
         private FTask() { }
-
 
         public class Poolable : IPoolable<FTask<T>>
         {

@@ -41,9 +41,10 @@ namespace FFramework
 
             IFTaskAwaiter fTaskAwaiter = (IFTaskAwaiter)awaiter;
 
+
             //TODO:释放旧Token,设置新Token
             fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
-            m_FTask.CurrentAwaiter = fTaskAwaiter;
+            m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
 
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsCancellationRequested)
             {
@@ -57,13 +58,14 @@ namespace FFramework
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
                 fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
-                if (m_NotFirstAwait && fTaskAwaiter is ISyncAwaiter syncAwaiter)
+                if (m_NotFirstAwait)
                 {
-                    syncAwaiter.SetSucceed();
+                    fTaskAwaiter.SetSyncSucceed();
                 }
+                else m_NotFirstAwait = true;
             }
 
-            m_NotFirstAwait = true;
+          
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -113,7 +115,8 @@ namespace FFramework
 
             //TODO:释放旧Token,设置新Token
             fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
-            m_FTask.CurrentAwaiter = fTaskAwaiter;
+            m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
+
 
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsCancellationRequested)
             {
@@ -127,13 +130,24 @@ namespace FFramework
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
                 fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
-                if (m_NotFirstAwait && fTaskAwaiter is ISyncAwaiter syncAwaiter)
+                if (m_NotFirstAwait)
                 {
-                    syncAwaiter.SetSucceed();
+                    fTaskAwaiter.SetSyncSucceed();
                 }
+                else m_NotFirstAwait = true;
+
+                //if (m_NotFirstAwait && fTaskAwaiter is ISyncAwaiter syncAwaiter)
+                //{
+                //    syncAwaiter.SetSucceed();
+                //}
+                //builder被await
+                //if (fTaskAwaiter.CurrentAwaiter is ISyncAwaiter syncAwaiterCurrent)
+                //{
+                //    syncAwaiterCurrent.SetSucceed();
+                //}
             }
 
-            m_NotFirstAwait = true;
+            
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
