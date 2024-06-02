@@ -23,7 +23,7 @@ namespace FFramework
         void SetRestore();
 
         /// <summary>
-        /// TODO: 检查并释放原TokenHolder，设置新的TokenHolder
+        /// TODO: 递归的为CurrentAwaiter设置Token
         /// </summary>
         /// <param name="token"></param>
         void SetToken(FCancellationTokenHolder token);

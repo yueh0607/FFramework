@@ -62,8 +62,8 @@ namespace FFramework
 
         void IFTaskAwaiter.SetToken(FCancellationTokenHolder token)
         {
-            if (m_TokenHolder != null)
-                Envirment.Current.GetModule<PoolModule>().Set<FCancellationTokenHolder, FCancellationTokenHolder.Poolable>(m_TokenHolder);
+            //if (m_TokenHolder != null)
+                //Envirment.Current.GetModule<PoolModule>().Set<FCancellationTokenHolder, FCancellationTokenHolder.Poolable>(m_TokenHolder);
             m_TokenHolder = token;
 
             if(CurrentAwaiter != null)

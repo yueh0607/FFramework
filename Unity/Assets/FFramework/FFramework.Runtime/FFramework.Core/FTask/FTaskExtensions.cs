@@ -9,6 +9,14 @@ namespace FFramework
     {
         public static FCatchTokenTask CompletedTask => Envirment.Current.GetModule<PoolModule>().Get<FCatchTokenTask, FCatchTokenTask.Poolable>();
 
+
+        public static FTask DelayMillseconds(int millseconds, ETimerLoop loop = ETimerLoop.Update)
+            => Delay(TimeSpan.FromMilliseconds(millseconds));
+
+        public static FTask DelaySeconds(float seconds, ETimerLoop loop = ETimerLoop.Update)
+            => Delay(TimeSpan.FromSeconds(seconds), loop);
+
+
         public static FTask Delay(TimeSpan delayTime, ETimerLoop loop = ETimerLoop.Update)
         {
             DelayPromise timer = Envirment.Current.GetModule<PoolModule>().Get<DelayPromise, DelayPromise.Poolable>();
@@ -126,24 +134,78 @@ namespace FFramework
     public static class FTaskExtensions
     {
 
+        /// <summary>
+        /// 使用某个令牌阻挡本状态机下令牌的传播
+        /// </summary>
+        /// <param name="fTask"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static FTask BlockToken(this FTask fTask, FCancellationTokenHolder token)
+        {
+            ((IFTaskAwaiter)fTask.GetAwaiter()).SetToken(token);
+            return fTask;
+        }
+
+        /// <summary>
+        /// 使用某个令牌阻挡本状态机下令牌的传播
+        /// </summary>
+        /// <param name="fTask"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public static FTask<T> BlockToken<T>(this FTask<T> fTask, FCancellationTokenHolder token)
+        {
+            ((IFTaskAwaiter)fTask.GetAwaiter()).SetToken(token);
+            return fTask;
+        }
+
+
+        /// <summary>
+        /// 绑定令牌后遗忘此任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="source"></param>
         public static void Forget(this FTask task, FCancellationTokenHolder source)
         {
             ((IFTaskAwaiter)task.GetAwaiter()).SetToken(source);
             Forget(task);
         }
+        /// <summary>
+        /// 遗忘此任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="source"></param>
         public static void Forget(this FTask task)
         {
             task.GetAwaiter().SetSyncSucceed();
         }
+
+        /// <summary>
+        /// 绑定令牌后遗忘此任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="source"></param>
         public static void Forget<T>(this FTask<T> task, FCancellationTokenHolder tokenHolder)
         {
             ((IFTaskAwaiter)task.GetAwaiter()).SetToken(tokenHolder);
             Forget<T>(task);
         }
+
+        /// <summary>
+        /// 遗忘此任务
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="source"></param>
         public static void Forget<T>(this FTask<T> task)
         {
             task.GetAwaiter().SetSyncSucceed();
         }
+
+        /// <summary>
+        /// 将Task转为FTask（将会丢失Suspend功能）
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="tokenSource"></param>
+        /// <returns></returns>
         public static FTask ToFTask(this Task task, CancellationTokenSource tokenSource = null)
         {
             ThreadingPromise promise = Envirment.Current.GetModule<PoolModule>().Get<ThreadingPromise, ThreadingPromise.Poolable>();
@@ -155,6 +217,12 @@ namespace FFramework
             return fTask;
         }
 
+        /// <summary>
+        /// 将Task转为FTask（将会丢失Suspend功能）
+        /// </summary>
+        /// <param name="task"></param>
+        /// <param name="tokenSource"></param>
+        /// <returns></returns>
         public static FTask<TResult> ToFTask<TResult>(this Task<TResult> task, CancellationTokenSource tokenSource = null)
         {
             ThreadingPromise<TResult> promise = Envirment.Current.GetModule<PoolModule>().Get<ThreadingPromise<TResult>, ThreadingPromise<TResult>.Poolable>();

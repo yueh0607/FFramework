@@ -41,9 +41,9 @@ namespace FFramework
 
             IFTaskAwaiter fTaskAwaiter = (IFTaskAwaiter)awaiter;
 
-
-            //TODO:释放旧Token,设置新Token
-            fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
+            //TODO:如果传入的有令牌，则不能覆盖
+            if (fTaskAwaiter.TokenHolder == null)              
+                fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
 
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsCancellationRequested)
@@ -65,7 +65,7 @@ namespace FFramework
                 else m_NotFirstAwait = true;
             }
 
-          
+
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -136,18 +136,9 @@ namespace FFramework
                 }
                 else m_NotFirstAwait = true;
 
-                //if (m_NotFirstAwait && fTaskAwaiter is ISyncAwaiter syncAwaiter)
-                //{
-                //    syncAwaiter.SetSucceed();
-                //}
-                //builder被await
-                //if (fTaskAwaiter.CurrentAwaiter is ISyncAwaiter syncAwaiterCurrent)
-                //{
-                //    syncAwaiterCurrent.SetSucceed();
-                //}
             }
 
-            
+
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
