@@ -1,7 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using YooAsset;
+﻿using YooAsset;
 
 namespace FFramework
 {
@@ -10,6 +7,7 @@ namespace FFramework
     /// </summary>
     public class UnityResourceHandle : ResourceHandle
     {
+        //YooAsset 资源句柄
         private AssetHandle m_AssetHandle;
 
 
@@ -21,6 +19,7 @@ namespace FFramework
 
         protected override void OnReleaseManagedResource()
         {
+            //资源句柄自动释放，执行析构，产生垃圾，发出提示
             managedResourceReleased = true;
             FLoger.LogWarning($"Resource handle leaked and automatically released");
         }

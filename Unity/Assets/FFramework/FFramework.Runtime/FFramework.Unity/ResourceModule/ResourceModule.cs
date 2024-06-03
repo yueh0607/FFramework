@@ -1,21 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using YooAsset;
 
 namespace FFramework
 {
-    public class ResourceModule : IModule
-    {
-        void IModule.OnCreate(object moduleParameter)
-        {
+    //public class ResourceModule : ResourceModuleBase<UnityResourceHandle>,IModule
+    //{
+    //    public override FTask<UnityResourceHandle> LoadAssetAsync(string assetPath)
+    //    {
             
-        }
+    //    }
 
-        void IModule.OnDestroy()
-        {
+    //    public override UnityResourceHandle LoadAssetSync(string assetPath)
+    //    {
             
-        }
+    //    }
 
 
-    }
+    //    void IModule.OnCreate(object moduleParameter)
+    //    {
+            
+    //    }
+
+    //    void IModule.OnDestroy()
+    //    {
+            
+    //    }
+
+
+    //}
 }

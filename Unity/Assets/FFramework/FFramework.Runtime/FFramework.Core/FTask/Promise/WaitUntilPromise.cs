@@ -13,6 +13,7 @@ namespace FFramework
 
         void IFTaskFlow.OnCancel()
         {
+            BindTask.SetSucceed();
             Envirment.Current.GetModule<PoolModule>().Set<WaitUntilPromise, WaitUntilPromise.Poolable>(this);
         }
 

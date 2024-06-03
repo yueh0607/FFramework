@@ -13,6 +13,7 @@
                 LockPromise.m_LockedSet.Remove(LockedAsset);
                 Envirment.Current.GetModule<EventModule>()
                     .Publisher.SendAll<IAsyncLockChanged>(LockedAsset);
+                BindTask.SetSucceed();
                 Envirment.Current.GetModule<PoolModule>().Set<UnlockPromise, UnlockPromise.Poolable>(this);
             }
 

@@ -8,16 +8,16 @@ namespace FFramework
     {
         void IModule.OnCreate(object moduleParameter)
         {
-            
+
         }
 
         void IModule.OnDestroy()
         {
-            
+
         }
 
         private LinkedList<IPanel> m_OpeningPanelStack = new LinkedList<IPanel>();
-      
+
 
     }
 }

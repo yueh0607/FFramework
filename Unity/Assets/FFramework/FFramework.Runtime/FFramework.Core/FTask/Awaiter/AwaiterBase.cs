@@ -17,19 +17,21 @@ namespace FFramework
 
         public void SetSyncSucceed()
         {
-            IFTaskAwaiter NowAwaiter = this;
-            while (NowAwaiter != null)
+            IFTaskAwaiter lastAwaiter = null;
+            IFTaskAwaiter nowAwaiter = this;
+            while (nowAwaiter != null)
             {
-                if (NowAwaiter is ISyncAwaiter syncAwaiter)
-                {
-                    syncAwaiter.SetSucceed();
-                }
-                NowAwaiter = NowAwaiter.CurrentAwaiter;
+                lastAwaiter = nowAwaiter;
+                nowAwaiter = nowAwaiter.CurrentAwaiter;
+            }
+            if (lastAwaiter is ISyncAwaiter syncAwaiter)
+            {
+                syncAwaiter.SetSucceed();
             }
         }
 
 
-        public bool IsCompleted { get; protected set; } = false;
+        public bool IsCompleted { get; private set; } = false;
 
         protected System.Object m_ContinuationOrExceptionDispatchInfo = null;
 
@@ -86,11 +88,11 @@ namespace FFramework
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
 
             m_Status = FTaskStatus.Canceled;
-            IsCompleted = true;
+
 
             BindTask.Flow?.OnCancel();
 
-            Recycle(BindTask);
+            //Recycle(BindTask);
         }
 
         public void SetSuspend()
@@ -118,7 +120,6 @@ namespace FFramework
             if (!m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_NOT_FINISHED_MESSAGE);
 
-            IsCompleted = false;
             m_ContinuationOrExceptionDispatchInfo = null;
             m_Status = FTaskStatus.Pending;
             m_TokenHolder = null;

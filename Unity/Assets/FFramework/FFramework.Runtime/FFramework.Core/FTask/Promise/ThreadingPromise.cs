@@ -17,6 +17,8 @@ namespace FFramework
             if (BindToken == null)
                 throw new System.NullReferenceException("BindToken is null");
             BindToken.Cancel();
+            BindTask.SetSucceed();
+            Envirment.Current.GetModule<PoolModule>().Set<ThreadingPromise, Poolable>(this);
         }
 
         void IFTaskFlow.OnFailed()

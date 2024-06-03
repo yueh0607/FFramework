@@ -6,6 +6,7 @@ namespace FFramework
     {
         private FTask m_FTask;
         public readonly FTask Task => m_FTask;
+
         private bool m_NotFirstAwait;
 
         public static FTaskAsyncMethodBuilder Create()
@@ -64,7 +65,6 @@ namespace FFramework
                 }
                 else m_NotFirstAwait = true;
             }
-
 
         }
 

@@ -7,6 +7,10 @@
     {
         public abstract FTask<T> LoadAssetAsync(string assetPath);
 
+        public abstract T LoadAssetSync(string assetPath);
+
+
+
 
     }
 }

@@ -17,7 +17,6 @@ namespace FFramework
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
 
             m_Status = FTaskStatus.Succeed;
-            IsCompleted = true;
            
             ((FSwitchThreadTask)BindTask).SwitchConext.Post(WaitCallback, null);
             BindTask.Flow?.OnSucceed();

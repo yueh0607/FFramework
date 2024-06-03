@@ -15,7 +15,6 @@ namespace FFramework
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
 
             m_Status = FTaskStatus.Succeed;
-            IsCompleted = true;
 
             BindTask.Flow?.OnSucceed();
             ((Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();

@@ -1,7 +1,19 @@
-﻿namespace FFramework
+﻿using System.Diagnostics;
+
+namespace FFramework
 {
-    public class FPoolUnit<T, K> : FUnit where K : IPoolable<T>
+    public abstract class FPoolUnit<T> : FDispoableUnit where T : FPoolUnit<T>
     {
-        
+
+        bool m_ManagedResourceReleased = false;
+        protected override void OnReleaseManagedResource()
+        {
+            m_ManagedResourceReleased = true;
+        }
+
+        protected override void OnReleaseUnmanagedResource()
+        {
+            FPool.Set<T>((T)this);
+        }
     }
 }

@@ -8,6 +8,7 @@
 
         void IFTaskFlow.OnCancel()
         {
+            BindTask.SetSucceed();
             Envirment.Current.GetModule<PoolModule>().Set<DelayPromise, DelayPromise.Poolable>(this);
         }
 

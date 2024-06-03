@@ -18,6 +18,7 @@ namespace FFramework
         void IFTaskFlow.OnCancel()
         {
             m_LockedSet.Remove(LockedAsset);
+            BindTask.SetSucceed();
             Envirment.Current.GetModule<PoolModule>().Set<LockPromise, LockPromise.Poolable>(this);
         }
 
