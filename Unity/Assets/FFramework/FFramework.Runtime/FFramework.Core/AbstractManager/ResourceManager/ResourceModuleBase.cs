@@ -2,14 +2,13 @@
 {
 
 
-
-    public abstract class ResourceModuleBase<T> where T : ResourceHandle
+    public abstract class ResourceModuleBase<AssetHandleType,AssetWhere> where AssetHandleType : ResourceHandle
     {
-        public abstract FTask<T> LoadAssetAsync(string assetPath);
+        public abstract AssetHandleType LoadAssetAsync<AssetType>(string assetPath) where AssetType:AssetWhere ; 
 
-        public abstract T LoadAssetSync(string assetPath);
+        public abstract AssetHandleType LoadAssetSync<AssetType>(string assetPath) where AssetType : AssetWhere;
 
-
+     
 
 
     }

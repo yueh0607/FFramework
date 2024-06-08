@@ -13,24 +13,24 @@ public class TestLog : MonoBehaviour
     async FTask A()
     {
         var token = await FTask.CatchToken();
-        Debug.Log($"A捕获到的令牌ID：{token.ID}");
+        //token.Cancel();
+        //if (token.IsCancellationRequested) return;
+        Debug.Log($"捕获的令牌ID：{token.ID}");
 
         await FTask.DelaySeconds(3);
-
-        Debug.Log($"A捕获到的令牌ID：{token.ID}");
-
-  
+        Debug.Log($"3s");
     }
 
-    FCancellationTokenHolder token1 = new FCancellationTokenHolder();
+    FCancellationToken token1 = new FCancellationToken();
  
 
     
     public void Start()
     {
+        FTask.Tick(TimeSpan.FromSeconds(1), (time) => Debug.Log($"现在是第{time.TotalSeconds}秒")).CancelAfterSeconds(10);
 
         Debug.Log($"传入A的令牌ID：{token1.ID}");
         A().Forget(token1);
-        token1.CancelAfterSeconds(1.5f);
+        token1.CancelAfterSeconds(1f);
     }
 }

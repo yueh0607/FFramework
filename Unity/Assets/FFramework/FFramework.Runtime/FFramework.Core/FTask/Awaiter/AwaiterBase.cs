@@ -19,6 +19,7 @@ namespace FFramework
         {
             IFTaskAwaiter lastAwaiter = null;
             IFTaskAwaiter nowAwaiter = this;
+
             while (nowAwaiter != null)
             {
                 lastAwaiter = nowAwaiter;
@@ -45,8 +46,8 @@ namespace FFramework
         }
 
 
-        protected FCancellationTokenHolder m_TokenHolder = null;
-        public FCancellationTokenHolder TokenHolder => m_TokenHolder;
+        protected FCancellationToken m_TokenHolder = null;
+        public FCancellationToken TokenHolder => m_TokenHolder;
 
         protected AwaiterBase() { }
 
@@ -62,17 +63,23 @@ namespace FFramework
         }
 
 
-        void IFTaskAwaiter.SetToken(FCancellationTokenHolder token)
+        void IFTaskAwaiter.SetToken(FCancellationToken token)
         {
             //if (m_TokenHolder != null)
-                //Envirment.Current.GetModule<PoolModule>().Set<FCancellationTokenHolder, FCancellationTokenHolder.Poolable>(m_TokenHolder);
+            //Envirment.Current.GetModule<PoolModule>().Set<FCancellationTokenHolder, FCancellationTokenHolder.Poolable>(m_TokenHolder);
             m_TokenHolder = token;
 
-            if(CurrentAwaiter != null)
+            if (m_TokenHolder != null)
+            {
+                m_TokenHolder.Flow = BindTask.Flow;
+            }
+
+            if (CurrentAwaiter != null)
             {
                 CurrentAwaiter.SetToken(token);
             }
         }
+
         public void SetFailed(ExceptionDispatchInfo exceptionDispatchInfo)
         {
             m_ContinuationOrExceptionDispatchInfo = exceptionDispatchInfo;
@@ -92,6 +99,7 @@ namespace FFramework
 
             BindTask.Flow?.OnCancel();
 
+            ((System.Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
             //Recycle(BindTask);
         }
 
@@ -122,6 +130,9 @@ namespace FFramework
 
             m_ContinuationOrExceptionDispatchInfo = null;
             m_Status = FTaskStatus.Pending;
+            if (TokenHolder != null)
+                if (TokenHolder.Flow == BindTask.Flow)
+                    TokenHolder.Flow = null;
             m_TokenHolder = null;
         }
 

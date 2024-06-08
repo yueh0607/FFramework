@@ -8,7 +8,7 @@ namespace FFramework
     {
         bool IsCompleted { get; }
 
-        FCancellationTokenHolder TokenHolder { get; }
+        FCancellationToken TokenHolder { get; }
 
         FTaskStatus Status { get; }
 
@@ -26,7 +26,7 @@ namespace FFramework
         /// TODO: 递归的为CurrentAwaiter设置Token
         /// </summary>
         /// <param name="token"></param>
-        void SetToken(FCancellationTokenHolder token);
+        void SetToken(FCancellationToken token);
     }
 
     public interface IFTaskNotGenericAwaiter : IFTaskAwaiter,ISucceedCallback

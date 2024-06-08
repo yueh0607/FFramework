@@ -46,15 +46,17 @@ namespace FFramework
             if (fTaskAwaiter.TokenHolder == null)              
                 fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
+          
 
-            if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsCancellationRequested)
+            if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
+                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 fTaskAwaiter.SetCanceled();
             }
-            else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsSuspendRequested)
+            else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
             {
                 fTaskAwaiter.SetSuspend();
-                fTaskAwaiter.TokenHolder.Token.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
+                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
             }
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
@@ -118,14 +120,15 @@ namespace FFramework
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
 
 
-            if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsCancellationRequested)
+            if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
+                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 fTaskAwaiter.SetCanceled();
             }
-            else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.Token.IsSuspendRequested)
+            else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
             {
                 fTaskAwaiter.SetSuspend();
-                fTaskAwaiter.TokenHolder.Token.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
+                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
             }
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {

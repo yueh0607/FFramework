@@ -65,7 +65,7 @@ namespace FFramework
             promise.BindTask = task.GetAwaiter();
             task.m_TaskFlow = promise;
 
-            FCancellationTokenHolder tokenHolder = await FTask.CatchToken();
+            FCancellationToken tokenHolder = await FTask.CatchToken();
             promise.TokenHolder = tokenHolder;
         }
 
@@ -80,7 +80,7 @@ namespace FFramework
             promise.BindTask = task.GetAwaiter();
             task.m_TaskFlow = promise;
 
-            FCancellationTokenHolder tokenHolder = await FTask.CatchToken();
+            FCancellationToken tokenHolder = await FTask.CatchToken();
             promise.TokenHolder = tokenHolder;
         }
 
@@ -127,6 +127,32 @@ namespace FFramework
             fSwitchThreadTask.SwitchConext = context;
             return fSwitchThreadTask;
         }
+
+
+        public static FCancellationToken Tick(TimeSpan time,Action<TimeSpan> callback,ETimerLoop loop = ETimerLoop.Update)
+        {
+            FCancellationToken token = 
+                Envirment.Current.GetModule<PoolModule>().Get<FCancellationToken, FCancellationToken.Poolable>();
+
+            async FTask DelayLoop(TimeSpan delayTime)
+            {
+                var m_Token = await FTask.CatchToken();
+                TimeSpan lastSpan = TimeSpan.Zero;
+                while(!token.IsCancellationRequested)
+                {
+                    await FTask.Delay(delayTime);
+
+                    if (token.IsCancellationRequested)
+                        break;
+
+                    lastSpan += delayTime;
+                    callback(lastSpan);
+                }
+            }
+
+            DelayLoop(time).Forget(token);
+            return token;
+        }
     }
 
 
@@ -140,7 +166,7 @@ namespace FFramework
         /// <param name="fTask"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static FTask BlockToken(this FTask fTask, FCancellationTokenHolder token)
+        public static FTask BlockToken(this FTask fTask, FCancellationToken token)
         {
             ((IFTaskAwaiter)fTask.GetAwaiter()).SetToken(token);
             return fTask;
@@ -152,7 +178,7 @@ namespace FFramework
         /// <param name="fTask"></param>
         /// <param name="token"></param>
         /// <returns></returns>
-        public static FTask<T> BlockToken<T>(this FTask<T> fTask, FCancellationTokenHolder token)
+        public static FTask<T> BlockToken<T>(this FTask<T> fTask, FCancellationToken token)
         {
             ((IFTaskAwaiter)fTask.GetAwaiter()).SetToken(token);
             return fTask;
@@ -164,9 +190,9 @@ namespace FFramework
         /// </summary>
         /// <param name="task"></param>
         /// <param name="source"></param>
-        public static void Forget(this FTask task, FCancellationTokenHolder source)
+        public static void Forget(this FTask task, FCancellationToken source)
         {
-            ((IFTaskAwaiter)task.GetAwaiter()).SetToken(source);
+            ((IFTaskAwaiter)(task.GetAwaiter())).SetToken(source);
             Forget(task);
         }
         /// <summary>
@@ -184,9 +210,9 @@ namespace FFramework
         /// </summary>
         /// <param name="task"></param>
         /// <param name="source"></param>
-        public static void Forget<T>(this FTask<T> task, FCancellationTokenHolder tokenHolder)
+        public static void Forget<T>(this FTask<T> task, FCancellationToken tokenHolder)
         {
-            ((IFTaskAwaiter)task.GetAwaiter()).SetToken(tokenHolder);
+            ((IFTaskAwaiter)(task.GetAwaiter())).SetToken(tokenHolder);
             Forget<T>(task);
         }
 

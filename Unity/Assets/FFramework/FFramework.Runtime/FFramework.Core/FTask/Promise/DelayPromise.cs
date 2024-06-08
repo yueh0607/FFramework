@@ -53,6 +53,7 @@
                 base.OnSet(obj);
                 obj.CurrentTime = 0;
                 obj.TargetTime = 0;
+                obj.BindTask = null;
             }
         }
     }

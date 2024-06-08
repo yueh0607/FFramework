@@ -36,7 +36,7 @@
             }
         }
 
-        public FCancellationTokenHolder TokenHolder { get; set; }
+        public FCancellationToken TokenHolder { get; set; }
 
         public class WaitCountAddFlow : IFTaskFlow
         {

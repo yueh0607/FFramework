@@ -5,17 +5,17 @@ namespace FFramework
     /// <summary>
     /// 自动回收资源句柄，如果主动释放将会回收，如果忘记主动释放，会产生GC
     /// </summary>
-    public class UnityResourceHandle : ResourceHandle
+    public abstract class UnityResourceHandle<T, K, U> : ResourceHandle
+        where T : UnityResourceHandle<T, K, U>, new() where K : class, IPoolable<T>, new() where U : HandleBase
     {
-        //YooAsset 资源句柄
-        private AssetHandle m_AssetHandle;
+
+        protected U m_AssetHandle;
 
 
         bool managedResourceReleased = false;
 
+        public override void SetHandle(object handle) => m_AssetHandle = (U)handle;
         public override object GetHandle()=> m_AssetHandle;
-
-        public override void SetHandle(object handle)=> m_AssetHandle = (AssetHandle)handle;
 
         protected override void OnReleaseManagedResource()
         {
@@ -26,39 +26,43 @@ namespace FFramework
 
         protected override void OnReleaseUnmanagedResource()
         {
-            m_AssetHandle.Release();   
             //没执行析构函数，代表为主动释放，回收到池
-            if(!managedResourceReleased)
+            if (!managedResourceReleased)
             {
-                ResourceHandle.ReleaseHandle<UnityResourceHandle, Poolable>(this);
+                ResourceHandle.ReleaseHandle<T, K>((T)this);
             }
         }
 
 
-        public class Poolable : IPoolable<UnityResourceHandle>
+        public class Poolable : IPoolable<UnityResourceHandle<T, K, U>>
         {
             int IPoolable.Capacity => 1000;
 
-            UnityResourceHandle IPoolable<UnityResourceHandle>.OnCreate()
+            public UnityResourceHandle<T, K, U> OnCreate()
             {
-                return new UnityResourceHandle();
+                return new T();
             }
 
-            void IPoolable<UnityResourceHandle>.OnDestroy(UnityResourceHandle obj)
+            public void OnDestroy(UnityResourceHandle<T, K, U> obj)
+            {
+
+            }
+
+            public void OnGet(UnityResourceHandle<T, K, U> obj)
             {
                 
             }
 
-            void IPoolable<UnityResourceHandle>.OnGet(UnityResourceHandle obj)
-            {
-                
-            }
-
-            void IPoolable<UnityResourceHandle>.OnSet(UnityResourceHandle obj)
+            public void OnSet(UnityResourceHandle<T, K, U> obj)
             {
                 obj.managedResourceReleased = false;
-                obj.m_AssetHandle = null;
+                obj.SetHandle(null);
             }
         }
+
+
     }
+
+
+
 }

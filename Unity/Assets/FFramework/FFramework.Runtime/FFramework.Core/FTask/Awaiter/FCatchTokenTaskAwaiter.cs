@@ -4,7 +4,7 @@ namespace FFramework
     public class FCatchTokenTaskAwaiter : AwaiterBase, ISyncAwaiter, IFTaskAwaiter
     {
 
-        public FCancellationTokenHolder GetResult()
+        public FCancellationToken GetResult()
         {
             return m_TokenHolder;
         }
