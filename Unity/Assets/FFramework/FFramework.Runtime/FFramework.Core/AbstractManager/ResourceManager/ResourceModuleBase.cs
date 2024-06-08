@@ -8,7 +8,7 @@
 
         public abstract AssetHandleType LoadAssetSync<AssetType>(string assetPath) where AssetType : AssetWhere;
 
-     
+        
 
 
     }

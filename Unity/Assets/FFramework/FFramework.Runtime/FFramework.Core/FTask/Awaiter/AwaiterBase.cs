@@ -85,6 +85,7 @@ namespace FFramework
             m_ContinuationOrExceptionDispatchInfo = exceptionDispatchInfo;
             m_Status = FTaskStatus.Failed;
 
+
             BindTask.Flow?.OnFailed();
             exceptionDispatchInfo.Throw();
         }
@@ -96,19 +97,21 @@ namespace FFramework
 
             m_Status = FTaskStatus.Canceled;
 
-
-            BindTask.Flow?.OnCancel();
+            //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
+            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+                BindTask.Flow.OnCancel();
 
             ((System.Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
-            //Recycle(BindTask);
+            Recycle(BindTask);
         }
 
         public void SetSuspend()
         {
             if (m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
-
-            BindTask.Flow?.OnSuspend();
+            //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
+            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+                BindTask.Flow.OnSuspend();
 
             m_Status = FTaskStatus.Suspending;
         }
@@ -117,8 +120,9 @@ namespace FFramework
         {
             if (m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
-
-            BindTask.Flow?.OnRestore();
+            //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
+            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+                BindTask.Flow.OnRestore();
 
             m_Status = FTaskStatus.Pending;
         }
@@ -130,9 +134,8 @@ namespace FFramework
 
             m_ContinuationOrExceptionDispatchInfo = null;
             m_Status = FTaskStatus.Pending;
-            if (TokenHolder != null)
-                if (TokenHolder.Flow == BindTask.Flow)
-                    TokenHolder.Flow = null;
+            if (TokenHolder != null && TokenHolder.Flow == BindTask.Flow)
+                TokenHolder.Flow = null;
             m_TokenHolder = null;
         }
 

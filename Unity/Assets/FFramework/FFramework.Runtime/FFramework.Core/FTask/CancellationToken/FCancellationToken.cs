@@ -57,6 +57,7 @@ namespace FFramework
 
 
 
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Cancel()
             => InternalCancel();
@@ -78,18 +79,67 @@ namespace FFramework
         public void CancelAfterMillseconds(int millseconds)
             => PrivateCancelAfter(TimeSpan.FromMilliseconds(millseconds)).Forget();
 
+
+
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Suspend()
             => InternalSuspend();
+
+        private async FTask PrivateSuspendAfter(TimeSpan time)
+        {
+            await FTask.Delay(time);
+            Suspend();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SuspendAfter(TimeSpan time)
+        => PrivateSuspendAfter(time).Forget();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SuspendAfterSeconds(float seconds)
+            => PrivateSuspendAfter(TimeSpan.FromSeconds(seconds)).Forget();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void SuspendAfterMillseconds(int millseconds)
+            => PrivateSuspendAfter(TimeSpan.FromMilliseconds(millseconds)).Forget();
+
+
+
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Restore()
             => InternalRestore();
 
+        private async FTask PrivateRestoreAfter(TimeSpan time)
+        {
+            await FTask.Delay(time);
+            Restore();
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RestoreAfter(TimeSpan time)
+        => PrivateRestoreAfter(time).Forget();
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RestoreAfterSeconds(float seconds)
+            => PrivateRestoreAfter(TimeSpan.FromSeconds(seconds)).Forget();
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RestoreAfterMillseconds(int millseconds)
+            => PrivateRestoreAfter(TimeSpan.FromMilliseconds(millseconds)).Forget();
+
+
+
+
+
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RegisterCancelCallback(System.Action callback)
             => InternalRegisterCancelCallback(callback);
 
+
+        public static implicit operator bool(FCancellationToken token)
+        {
+            return token != null && token.IsCancellationRequested;
+        }
 
         public class Poolable : IPoolable<FCancellationToken>
         {

@@ -12,6 +12,8 @@ namespace FFramework
 
         public T GetAssetObject<T>() where T : UnityEngine.Object => (T)AssetObject;
 
+
+
         public async FTask EnsureDone(IProgress<float> progress = null)
         {
             FCancellationToken token = await FTask.CatchToken();
@@ -19,6 +21,7 @@ namespace FFramework
             {
                 return;
             }
+            ///如果需要进度
             if (progress != null)
             {
                 await FTask.WaitUntil
@@ -30,7 +33,8 @@ namespace FFramework
                     }
                 );
             }
-            else
+            //不需要进度，且有令牌,可以不用更新
+            else if (token != null)
             {
                 //保存状态
                 token.Suspend();
@@ -38,6 +42,7 @@ namespace FFramework
                 m_AssetHandle.Completed += (_) => token.Restore();
                 await FTask.CompletedTask;
             }
+
         }
 
         public new class Poolable :
