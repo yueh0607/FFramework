@@ -1,4 +1,5 @@
-﻿using YooAsset;
+﻿using System;
+using YooAsset;
 
 namespace FFramework
 {
@@ -14,8 +15,11 @@ namespace FFramework
 
         bool managedResourceReleased = false;
 
+
+        public bool IsDone => m_AssetHandle.IsDone;
+
         public override void SetHandle(object handle) => m_AssetHandle = (U)handle;
-        public override object GetHandle()=> m_AssetHandle;
+        public override object GetHandle() => m_AssetHandle;
 
         protected override void OnReleaseManagedResource()
         {
@@ -31,6 +35,23 @@ namespace FFramework
             {
                 ResourceHandle.ReleaseHandle<T, K>((T)this);
             }
+        }
+
+        public async virtual FTask EnsureDone(IProgress<float> progress = null)
+        {
+            await FTask.CompletedTask;
+            if (m_AssetHandle.IsDone)
+            {
+                return;
+            }
+            await FTask.WaitUntil
+            (
+                () =>
+                {
+                    progress?.Report(m_AssetHandle.Progress);
+                    return m_AssetHandle.IsDone;
+                }
+            );
         }
 
 
@@ -50,7 +71,7 @@ namespace FFramework
 
             public void OnGet(UnityResourceHandle<T, K, U> obj)
             {
-                
+
             }
 
             public void OnSet(UnityResourceHandle<T, K, U> obj)

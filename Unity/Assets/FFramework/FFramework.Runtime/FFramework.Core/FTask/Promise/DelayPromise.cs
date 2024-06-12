@@ -48,6 +48,8 @@
 
         public new class Poolable : LifeCycleSwitch<DelayPromise>.Poolable
         {
+
+
             public override void OnSet(DelayPromise obj)
             {
                 base.OnSet(obj);

@@ -13,7 +13,7 @@ namespace FFramework
         FTaskStatus Status { get; }
 
         void SetSyncSucceed();
-        
+
         void SetFailed(ExceptionDispatchInfo exceptionDispatchInfo);
 
         void SetCanceled();

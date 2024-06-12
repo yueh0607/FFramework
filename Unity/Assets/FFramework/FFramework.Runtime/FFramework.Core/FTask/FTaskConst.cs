@@ -14,7 +14,7 @@
 
 
         //任务已完成
-        public const string FTASK_ALREADY_FINISHED_MESSAGE = "FTask is already finished";
+        public const string FTASK_ALREADY_FINISHED_MESSAGE = "FTask __ID__ is already finished";
         //不能重置运行中的Awaiter
         public const string FTASK_NOT_FINISHED_MESSAGE = "FTask is pending";
 

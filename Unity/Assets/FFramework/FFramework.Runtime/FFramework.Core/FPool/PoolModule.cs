@@ -45,8 +45,10 @@ namespace FFramework
         public void Set<T, K>(T obj) where T : class where K : IPoolable<T>, new()
         {
             Create(new K());
-            if (obj == null) throw new NullReferenceException();
-
+            if (obj == null)
+            {
+                throw new NullReferenceException("You are tring to set a null");
+            }
             m_CachePools[typeof(T)].Set(obj);
 
         }
@@ -97,7 +99,7 @@ namespace FFramework
 
         void IModule.OnDestroy()
         {
-            foreach(var pool in m_CachePools)
+            foreach (var pool in m_CachePools)
             {
                 pool.Value.Dispose();
             }

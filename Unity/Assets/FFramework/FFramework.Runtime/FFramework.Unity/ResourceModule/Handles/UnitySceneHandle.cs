@@ -3,13 +3,12 @@ using YooAsset;
 
 namespace FFramework
 {
-    public class UnityAssetHandle : UnityResourceHandle<UnityAssetHandle, UnityAssetHandle.Poolable, AssetHandle>
+    public class UnitySceneHandle : UnityResourceHandle<UnitySceneHandle, UnitySceneHandle.Poolable,SceneHandle>
     {
-        public UnityEngine.Object AssetObject => base.m_AssetHandle.AssetObject;
 
-        public T GetAssetObject<T>() where T : UnityEngine.Object => (T)AssetObject;
+        public void ActiveScene() => m_AssetHandle.ActivateScene();
 
-
+        public UnityEngine.SceneManagement.Scene SceneObject => m_AssetHandle.SceneObject;
 
         public override async FTask EnsureDone(IProgress<float> progress = null)
         {
@@ -31,7 +30,7 @@ namespace FFramework
                 );
             }
             //不需要进度，且有令牌,可以不用更新
-            else if (token != null && !token.IsCancellationRequested)
+            else if (token != null)
             {
                 //保存状态
                 token.Suspend();
@@ -39,30 +38,29 @@ namespace FFramework
                 m_AssetHandle.Completed += (_) => token.Restore();
                 await FTask.CompletedTask;
             }
-
         }
 
         public new class Poolable :
-            UnityResourceHandle<UnityAssetHandle, UnityAssetHandle.Poolable, AssetHandle>.Poolable,
-            IPoolable<UnityAssetHandle>
+            UnityResourceHandle<UnitySceneHandle, UnitySceneHandle.Poolable,SceneHandle >.Poolable,
+            IPoolable<UnitySceneHandle>
         {
 
-            public new UnityAssetHandle OnCreate()
+            public new UnitySceneHandle OnCreate()
             {
-                return (UnityAssetHandle)(base.OnCreate());
+                return (UnitySceneHandle)(base.OnCreate());
             }
 
-            public void OnDestroy(UnityAssetHandle obj)
+            public void OnDestroy(UnitySceneHandle obj)
             {
                 base.OnDestroy(obj);
             }
 
-            public void OnGet(UnityAssetHandle obj)
+            public void OnGet(UnitySceneHandle obj)
             {
                 base.OnGet(obj);
             }
 
-            public void OnSet(UnityAssetHandle obj)
+            public void OnSet(UnitySceneHandle obj)
             {
                 base.OnSet(obj);
             }

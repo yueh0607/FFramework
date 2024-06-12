@@ -17,17 +17,14 @@ namespace FFramework
 
         public void SetSyncSucceed()
         {
-            IFTaskAwaiter lastAwaiter = null;
-            IFTaskAwaiter nowAwaiter = this;
-
-            while (nowAwaiter != null)
+            IFTaskAwaiter curAwaiter = this;
+            while (curAwaiter != null)
             {
-                lastAwaiter = nowAwaiter;
-                nowAwaiter = nowAwaiter.CurrentAwaiter;
-            }
-            if (lastAwaiter is ISyncAwaiter syncAwaiter)
-            {
-                syncAwaiter.SetSucceed();
+                if (curAwaiter is ISyncAwaiter syncAwaiter)
+                {
+                    syncAwaiter.SetSucceed();
+                }
+                curAwaiter = curAwaiter.CurrentAwaiter;
             }
         }
 
@@ -133,7 +130,7 @@ namespace FFramework
                 throw new System.InvalidOperationException(FTaskConst.FTASK_NOT_FINISHED_MESSAGE);
 
             m_ContinuationOrExceptionDispatchInfo = null;
-            m_Status = FTaskStatus.Pending;
+
             if (TokenHolder != null && TokenHolder.Flow == BindTask.Flow)
                 TokenHolder.Flow = null;
             m_TokenHolder = null;

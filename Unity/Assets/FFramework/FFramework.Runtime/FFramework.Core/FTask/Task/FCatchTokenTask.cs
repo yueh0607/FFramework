@@ -1,4 +1,6 @@
-﻿namespace FFramework
+﻿using System.Diagnostics;
+
+namespace FFramework
 {
     public class FCatchTokenTask : FUnit, IFTask
     {
@@ -10,7 +12,10 @@
 
         IFTaskFlow IFTask.Flow => m_TaskFlow;
 
-        private FCatchTokenTask() { }
+        private FCatchTokenTask() 
+        {
+
+        }
 
         public class Poolable : IPoolable<FCatchTokenTask>
         {
@@ -19,6 +24,7 @@
             FCatchTokenTask IPoolable<FCatchTokenTask>.OnCreate()
             {
                 FCatchTokenTask m_FCatchTokenTask = new FCatchTokenTask();
+                //UnityEngine.Debug.Log("OnCreate" + m_FCatchTokenTask.ID);
                 return m_FCatchTokenTask;
             }
 

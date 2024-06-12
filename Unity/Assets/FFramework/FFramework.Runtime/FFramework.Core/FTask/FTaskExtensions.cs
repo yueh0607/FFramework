@@ -129,28 +129,28 @@ namespace FFramework
         }
 
 
+         static async FTask DelayLoop(TimeSpan delayTime,Action<TimeSpan> callback, ETimerLoop loop)
+        {
+            var m_Token = await FTask.CatchToken();
+            TimeSpan lastSpan = TimeSpan.Zero;
+            while (!m_Token.IsCancellationRequested)
+            {
+                await FTask.Delay(delayTime, loop: loop);
+
+                if (m_Token.IsCancellationRequested)
+                    break;
+
+                lastSpan += delayTime;
+                callback(lastSpan);
+            }
+        }
         public static FCancellationToken Tick(TimeSpan time,Action<TimeSpan> callback,ETimerLoop loop = ETimerLoop.Update)
         {
             FCancellationToken token = 
                 Envirment.Current.GetModule<PoolModule>().Get<FCancellationToken, FCancellationToken.Poolable>();
 
-            async FTask DelayLoop(TimeSpan delayTime)
-            {
-                var m_Token = await FTask.CatchToken();
-                TimeSpan lastSpan = TimeSpan.Zero;
-                while(!token.IsCancellationRequested)
-                {
-                    await FTask.Delay(delayTime);
 
-                    if (token.IsCancellationRequested)
-                        break;
-
-                    lastSpan += delayTime;
-                    callback(lastSpan);
-                }
-            }
-
-            DelayLoop(time).Forget(token);
+            DelayLoop(time,callback,loop).Forget(token);
             return token;
         }
     }

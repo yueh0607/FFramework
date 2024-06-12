@@ -14,10 +14,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowPackageView: 1
   ShowEditorAlias: 0
-  UniqueBundleName: 0
+  UniqueBundleName: 1
   Packages:
-  - PackageName: DefaultPackage
-    PackageDesc: 
+  - PackageName: GameResource
+    PackageDesc: "\u6E38\u620F\u8D44\u6E90\u5305"
+    EnableAddressable: 1
+    LocationToLower: 0
+    IncludeAssetGUID: 0
+    AutoCollectShaders: 1
+    IgnoreRuleName: NormalIgnoreRule
+    Groups:
+    - GroupName: Default Group
+      GroupDesc: 
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Arts/Prefabs
+        CollectorGUID: bf948517baefb2748b0f8c94b644ebbb
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectPrefab
+        AssetTags: 
+        UserData: 
+  - PackageName: GameLogic
+    PackageDesc: "\u6E38\u620F\u903B\u8F91\u5305"
     EnableAddressable: 0
     LocationToLower: 0
     IncludeAssetGUID: 0

@@ -7,30 +7,49 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 
-public class TestLog : MonoBehaviour
+public class TestLog : MonoBehaviour, IProgress<float>
 {
- 
+
     async FTask A()
     {
-        var token = await FTask.CatchToken();
-        //token.Cancel();
-        //if (token.IsCancellationRequested) return;
-        Debug.Log($"捕获的令牌ID：{token.ID}");
+        ResourceInitParameters param = new ResourceInitParameters.Simulate();
 
-        await FTask.DelaySeconds(3);
-        Debug.Log($"3s");
+        await FResource.Initialize(param);
+        var loadhandle = FResource.LoadAssetAsync<GameObject>("UIRoot");
+        await loadhandle.EnsureDone(this);
     }
 
+    async FTask C()
+    {
+        var token = await FTask.CatchToken();
+        Debug.Log($"C捕获的ID：{token.ID}");
+    }
+
+    async FTask B()
+    {
+        var token = await FTask.CatchToken();
+        Debug.Log($"B捕获的ID：{token.ID}");
+        await C();
+        //await FTask.DelaySeconds(1);
+    }
+
+
     FCancellationToken token1 = new FCancellationToken();
- 
+
     public void Start()
     {
-        FTask.Tick(TimeSpan.FromSeconds(1), (time) => Debug.Log($"现在是第{time.TotalSeconds}秒")).CancelAfterSeconds(10);
-
+        FTask.Tick(TimeSpan.FromSeconds(1), (time) => Debug.Log($"现在是第{time.TotalSeconds}秒")).CancelAfterSeconds(100);
         Debug.Log($"传入A的令牌ID：{token1.ID}");
+
+        Envirment.Current.CreateModule<UnityResourceModule>();
+        B().Forget(token1);
         A().Forget(token1);
-        token1.SuspendAfterSeconds(1f);
-        token1.RestoreAfterSeconds(5);
-        
+
+
+    }
+
+    public void Report(float value)
+    {
+        Debug.Log("加载进度：" + value);
     }
 }

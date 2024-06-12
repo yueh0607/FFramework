@@ -50,7 +50,7 @@ namespace FFramework
 
             void IPoolable<FSwitchThreadAwaiter>.OnGet(FSwitchThreadAwaiter obj)
             {
-
+                obj.m_Status = FTaskStatus.Pending;
             }
 
             void IPoolable<FSwitchThreadAwaiter>.OnSet(FSwitchThreadAwaiter obj)

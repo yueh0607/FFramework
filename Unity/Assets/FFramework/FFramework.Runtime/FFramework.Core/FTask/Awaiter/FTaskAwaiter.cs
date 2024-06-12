@@ -41,7 +41,7 @@ namespace FFramework
 
             void IPoolable<FTaskAwaiter>.OnGet(FTaskAwaiter obj)
             {
-                
+                obj.m_Status = FTaskStatus.Pending;
             }
 
             void IPoolable<FTaskAwaiter>.OnSet(FTaskAwaiter obj)
@@ -94,7 +94,7 @@ namespace FFramework
 
             void IPoolable<FTaskAwaiter<T>>.OnGet(FTaskAwaiter<T> obj)
             {
-                
+                obj.m_Status = FTaskStatus.Pending;
             }
 
             void IPoolable<FTaskAwaiter<T>>.OnSet(FTaskAwaiter<T> obj)

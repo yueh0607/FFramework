@@ -14,7 +14,7 @@
 
         internal void ResetID()
         {
-            m_ID = m_UniqueID.GetNextID();
+            //m_ID = m_UniqueID.GetNextID();
         }
     }
 }

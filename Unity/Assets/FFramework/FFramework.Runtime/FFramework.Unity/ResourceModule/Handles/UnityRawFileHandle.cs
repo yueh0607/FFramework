@@ -3,12 +3,11 @@ using YooAsset;
 
 namespace FFramework
 {
-    public class UnityAssetHandle : UnityResourceHandle<UnityAssetHandle, UnityAssetHandle.Poolable, AssetHandle>
+    public class UnityRawFileHandle : UnityResourceHandle<UnityRawFileHandle, UnityRawFileHandle.Poolable,RawFileHandle>
     {
-        public UnityEngine.Object AssetObject => base.m_AssetHandle.AssetObject;
+        public byte[] GetRawFileData()=> m_AssetHandle.GetRawFileData();
 
-        public T GetAssetObject<T>() where T : UnityEngine.Object => (T)AssetObject;
-
+        public string GetRawFileText()=> m_AssetHandle.GetRawFileText();
 
 
         public override async FTask EnsureDone(IProgress<float> progress = null)
@@ -39,30 +38,29 @@ namespace FFramework
                 m_AssetHandle.Completed += (_) => token.Restore();
                 await FTask.CompletedTask;
             }
-
         }
 
         public new class Poolable :
-            UnityResourceHandle<UnityAssetHandle, UnityAssetHandle.Poolable, AssetHandle>.Poolable,
-            IPoolable<UnityAssetHandle>
+            UnityResourceHandle<UnityRawFileHandle, UnityRawFileHandle.Poolable, RawFileHandle>.Poolable,
+            IPoolable<UnityRawFileHandle>
         {
 
-            public new UnityAssetHandle OnCreate()
+            public new UnityRawFileHandle OnCreate()
             {
-                return (UnityAssetHandle)(base.OnCreate());
+                return (UnityRawFileHandle)(base.OnCreate());
             }
 
-            public void OnDestroy(UnityAssetHandle obj)
+            public void OnDestroy(UnityRawFileHandle obj)
             {
                 base.OnDestroy(obj);
             }
 
-            public void OnGet(UnityAssetHandle obj)
+            public void OnGet(UnityRawFileHandle obj)
             {
                 base.OnGet(obj);
             }
 
-            public void OnSet(UnityAssetHandle obj)
+            public void OnSet(UnityRawFileHandle obj)
             {
                 base.OnSet(obj);
             }

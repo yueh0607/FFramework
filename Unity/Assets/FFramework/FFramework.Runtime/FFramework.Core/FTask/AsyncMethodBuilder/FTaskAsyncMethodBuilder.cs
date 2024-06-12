@@ -26,6 +26,7 @@ namespace FFramework
 
         public readonly void SetResult()
         {
+            m_FTask.GetAwaiter().CurrentAwaiter = null;
             ((ISucceedCallback)m_FTask.GetAwaiter()).SetSucceed();
         }
 
@@ -46,11 +47,10 @@ namespace FFramework
             if (fTaskAwaiter.TokenHolder == null)              
                 fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
-          
 
+            fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
-                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 fTaskAwaiter.SetCanceled();
             }
             else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
@@ -60,14 +60,12 @@ namespace FFramework
             }
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
-                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 if (m_NotFirstAwait)
                 {
                     fTaskAwaiter.SetSyncSucceed();
                 }
-                else m_NotFirstAwait = true;
             }
-
+            m_NotFirstAwait = true;
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)
@@ -100,6 +98,7 @@ namespace FFramework
 
         public readonly void SetResult(T result)
         {
+            m_FTask.GetAwaiter().CurrentAwaiter = null;
             ((ISucceedCallback<T>)m_FTask.GetAwaiter()).SetSucceed(result);
         }
 
@@ -118,11 +117,10 @@ namespace FFramework
             //TODO:释放旧Token,设置新Token
             fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
-
+            fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
 
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
-                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 fTaskAwaiter.SetCanceled();
             }
             else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
@@ -132,16 +130,15 @@ namespace FFramework
             }
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
-                fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
                 if (m_NotFirstAwait)
                 {
                     fTaskAwaiter.SetSyncSucceed();
                 }
-                else m_NotFirstAwait = true;
+              
 
             }
 
-
+            m_NotFirstAwait = true;
         }
 
         public void AwaitUnsafeOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine)

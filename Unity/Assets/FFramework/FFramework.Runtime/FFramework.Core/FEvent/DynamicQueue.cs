@@ -67,6 +67,11 @@ namespace FFramework
                 value = m_InQueue.Dequeue();
                 while (!m_Exist.Contains(value) || !m_Enumerated.Add(value))
                 {
+                    if(m_InQueue.Count<=0)
+                    {
+                        value = default;
+                        return false;
+                    }
                     value = m_InQueue.Dequeue();
                 }
                 return true;

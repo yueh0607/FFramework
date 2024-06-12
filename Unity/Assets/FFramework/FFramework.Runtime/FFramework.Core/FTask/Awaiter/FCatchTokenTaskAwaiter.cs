@@ -11,13 +11,14 @@ namespace FFramework
 
         public void SetSucceed()
         {
+            UnityEngine.Debug.Log($"SetSucceed:{((FUnit)BindTask).ID}");
             if (m_Status.IsFinished())
-                throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
+                throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE.Replace("__ID__", $"{((FUnit)BindTask).ID}"));
 
             m_Status = FTaskStatus.Succeed;
 
             BindTask.Flow?.OnSucceed();
-            ((Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
+            ((Action)m_ContinuationOrExceptionDispatchInfo).Invoke();
 
             Recycle(BindTask);
         }
@@ -48,7 +49,7 @@ namespace FFramework
 
             void IPoolable<FCatchTokenTaskAwaiter>.OnGet(FCatchTokenTaskAwaiter obj)
             {
-                
+                obj.m_Status = FTaskStatus.Pending;
             }
 
             void IPoolable<FCatchTokenTaskAwaiter>.OnSet(FCatchTokenTaskAwaiter obj)
