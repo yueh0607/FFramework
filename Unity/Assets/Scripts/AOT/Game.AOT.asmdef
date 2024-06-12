@@ -1,5 +1,5 @@
 {
-    "name": "Project.AOT",
+    "name": "Game.AOT",
     "rootNamespace": "Game",
     "references": [
         "GUID:0086669723cff0b48b5ee5d90ca569ce"
