@@ -1,81 +1,79 @@
-﻿using HybridCLR.Editor;
+﻿using FFramework.Utils.Editor;
 using HybridCLR.Editor.Settings;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
+using UnityEditor.Build.Content;
 using UnityEngine;
 
-namespace FFramework.HotFix.UnityEditor
+namespace FFramework.HotFix.Editor
 {
 
     public class HotFixTool : EditorWindow
     {
-        [MenuItem("HotFixTool", menuItem = "FFramework/HotFixTool")]
+        [MenuItem("HotFixCopyTool", menuItem = "FFramework/HotFix Copy Tool")]
         public static void OpenWindow()
         {
             var window = GetWindow<HotFixTool>();
-            window.name = "HotFixTool";
+            window.name = WINDOW_NAME;
             window.Show();
         }
 
+        const string WINDOW_NAME = "热更新DLL拷贝工具";
 
-        private string hotFixBytesPath, metaBytesPath;
-
-        private void OnEnable()
-        {
-            LoadPlatformOptions();
-            selectedPlatform = PlatformOptions.IndexOf(HotFixToolSettings.instance.currentPlatform);
-            if(PlatformOptions.Count>0 && selectedPlatform<0) selectedPlatform = 0;
-            hotFixBytesPath = HotFixToolSettings.instance.hotFixBytesPath;
-            metaBytesPath = HotFixToolSettings.instance.metaDataBytesPath;
-        }
-
-        private void OnDisable()
-        {
-            if(selectedPlatform<PlatformOptions.Count&&selectedPlatform>=0)
-            HotFixToolSettings.instance.currentPlatform = PlatformOptions[selectedPlatform];
-            HotFixToolSettings.instance.hotFixBytesPath = hotFixBytesPath;
-            HotFixToolSettings.instance.metaDataBytesPath = metaBytesPath;
-            HotFixToolSettings.instance.Modify();
-            EditorUtility.SetDirty(HotFixToolSettings.instance);
-            AssetDatabase.SaveAssetIfDirty(HotFixToolSettings.instance);
-        }
+        static List<string> HotUpdateAssemblyNames = new List<string>();
+        static List<string> PatchMetaDataNames = new List<string>();
 
         Vector2 hotUpdateScrollViewPosition = Vector2.zero;
         Vector2 patchDataScrollViewPosition = Vector2.zero;
 
-        int selectedPlatform = 0;
+        static BuildTarget currentBuildTarget;
+
+        const string DLL_EXTENSION = ".dll";
+        const string BYTES_EXTENSION = ".bytes";
+
+
+        private void OnDestroy()
+        {
+            HotFixToolSettings.Save();
+        }
+
+
         private void OnGUI()
         {
+            this.titleContent = new GUIContent($"{WINDOW_NAME} - {currentBuildTarget}");
 
-            selectedPlatform = EditorGUILayout.Popup("拷贝平台", selectedPlatform, PlatformOptions.ToArray());
-            hotFixBytesPath = EditorGUILayout.TextField("热更新Bytes拷贝路径", hotFixBytesPath);
-            metaBytesPath = EditorGUILayout.TextField("元数据Bytes拷贝路径", metaBytesPath);
+            HotFixToolSettings.Instance.hotFixBytesPath = EditorGUILayout.TextField("热更新DLL拷贝路径", HotFixToolSettings.Instance.hotFixBytesPath);
+            HotFixToolSettings.Instance.metaDataBytesPath = EditorGUILayout.TextField("补充元数据DLL拷贝路径", HotFixToolSettings.Instance.metaDataBytesPath);
 
             GUILayout.BeginHorizontal();
             var color = GUI.color;
             GUI.color = Color.green;
-            if (GUILayout.Button("重新拷贝")) ClearAndCopyHotFixDllFile();
-            if (GUILayout.Button("重置路径")) ResetPathToDefault();
+            if (GUILayout.Button("重新拷贝")) ClearAndCopyHotFixDllBytes();
+            if (GUILayout.Button("重置路径")) HotFixToolSettings.Reset();
             if (GUILayout.Button("清空拷贝")) ClearHotFixDllFiles();
             GUI.color = color;
             GUILayout.EndHorizontal();
 
-            GUILayout.Label("热更新程序集(ReadOnly)");
+            GUILayout.Label("热更程序集列表(ReadOnly)");
             hotUpdateScrollViewPosition = GUILayout.BeginScrollView(hotUpdateScrollViewPosition);
             foreach (var item in HotUpdateAssemblyNames)
             {
+                GUI.enabled = false;
                 GUILayout.TextArea(item);
+                GUI.enabled = true;
             }
             GUILayout.EndScrollView();
 
 
-            GUILayout.Label("补充元数据(ReadOnly)");
+            GUILayout.Label("补充元数据列表(ReadOnly)");
             patchDataScrollViewPosition = GUILayout.BeginScrollView(patchDataScrollViewPosition);
             foreach (var item in PatchMetaDataNames)
             {
+                GUI.enabled = false;
                 GUILayout.TextArea(item);
+                GUI.enabled = true;
             }
             GUILayout.EndScrollView();
         }
@@ -84,15 +82,16 @@ namespace FFramework.HotFix.UnityEditor
         {
             LoadAllUsefulData();
         }
-        void LoadAllUsefulData()
+
+        static void LoadAllUsefulData()
         {
+            currentBuildTarget = EditorUserBuildSettings.activeBuildTarget;
+
             LoadHotUpdateAssemblyNames();
             LoadMetaDataAssemblyNames();
         }
-        List<string> HotUpdateAssemblyNames = new List<string>();
-        List<string> PatchMetaDataNames = new List<string>();
-        List<string> PlatformOptions = new List<string>();
-        void LoadHotUpdateAssemblyNames()
+
+        static void LoadHotUpdateAssemblyNames()
         {
             HotUpdateAssemblyNames.Clear();
             foreach (var name in HybridCLRSettings.Instance.hotUpdateAssemblies)
@@ -104,7 +103,7 @@ namespace FFramework.HotFix.UnityEditor
                 HotUpdateAssemblyNames.Add(adf.name);
             }
         }
-        void LoadMetaDataAssemblyNames()
+        static void LoadMetaDataAssemblyNames()
         {
             PatchMetaDataNames.Clear();
             foreach (var name in HybridCLRSettings.Instance.patchAOTAssemblies)
@@ -116,65 +115,59 @@ namespace FFramework.HotFix.UnityEditor
                 PatchMetaDataNames.Add(Path.GetFileNameWithoutExtension(name));
             }
         }
-        void LoadPlatformOptions()
-        {
-            PlatformOptions.Clear();
-            //PlatformOptions.Add("None");
-            foreach (var platform in Directory.EnumerateDirectories(HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir))
-            {
-                PlatformOptions.Add(Path.GetFileName(platform));
-            }
-        }
 
 
-        bool HotAssemblyNameTest(string name)
+        static bool HotAssemblyNameTest(string name)
         {
             return HotUpdateAssemblyNames.Contains(name);
         }
-        bool PatchMetaAssleblyNameTest(string name)
+        static bool PatchMetaAssleblyNameTest(string name)
         {
             return PatchMetaDataNames.Contains(name);
         }
-        void ClearAndCopyHotFixDllFile()
+
+
+        public static void ClearAndCopyHotFixDllBytes()
         {
-            if (selectedPlatform < 0 || selectedPlatform >= PlatformOptions.Count) throw new InvalidOperationException("无效的平台");
-            //LoadAllUsefulAssemblyNames();
+
+            LoadAllUsefulData();
+
+
             ClearHotFixDllFiles(false);
-            int i = FolderBytesCopyer.CopyBytes(ProjectPath + HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir + "/" + PlatformOptions[selectedPlatform],
-                ".dll", ProjectPath + hotFixBytesPath, ".bytes", HotAssemblyNameTest);
-            int j = FolderBytesCopyer.CopyBytes(ProjectPath + HybridCLRSettings.Instance.strippedAOTDllOutputRootDir + "/" + PlatformOptions[selectedPlatform],
-                ".dll", ProjectPath + metaBytesPath, ".bytes", PatchMetaAssleblyNameTest);
-            AssetDatabase.Refresh();
+
+            string absHotUpdateDllCopyFromPath = Path.Combine(HybridCLRSettings.Instance.hotUpdateDllCompileOutputRootDir, currentBuildTarget.ToString());
+            string absMetaDataDllCopyFromPath = Path.Combine(HybridCLRSettings.Instance.strippedAOTDllOutputRootDir, currentBuildTarget.ToString());
+
+
+            string absHotUpdateDllCopyTargetPath = EditorPathUtils.GetAbsLocation(EPathType.AssetPath, HotFixToolSettings.Instance.hotFixBytesPath);
+            string absPatchMetaDataDllCopyTargetPath = EditorPathUtils.GetAbsLocation(EPathType.AssetPath, HotFixToolSettings.Instance.metaDataBytesPath);
+
+
+            int i = FolderBytesCopyer.CopyBytes(absHotUpdateDllCopyFromPath,
+                DLL_EXTENSION, absHotUpdateDllCopyTargetPath, BYTES_EXTENSION, HotAssemblyNameTest);
             Debug.Log($"Copy HotUpdateDll Completed ,Count: {i}");
+
+            int j = FolderBytesCopyer.CopyBytes(absMetaDataDllCopyFromPath,
+                DLL_EXTENSION, absHotUpdateDllCopyTargetPath, BYTES_EXTENSION, PatchMetaAssleblyNameTest);
             Debug.Log($"Copy MetaDataDll Completed: Count {j}");
+
+            AssetDatabase.Refresh();
+            
+           
         }
 
-        void ClearHotFixDllFiles(bool refresh = true)
+        public static void ClearHotFixDllFiles(bool needRefresh = true)
         {
-
-            FolderBytesCopyer.ClearFiles(ProjectPath + hotFixBytesPath);
-            FolderBytesCopyer.ClearFiles(ProjectPath + metaBytesPath);
+            string absHotUpdateDllCopyTargetPath = EditorPathUtils.GetAbsLocation(EPathType.AssetPath, HotFixToolSettings.Instance.hotFixBytesPath);
+            string absPatchMetaDataDllCopyTargetPath = EditorPathUtils.GetAbsLocation(EPathType.AssetPath, HotFixToolSettings.Instance.metaDataBytesPath);
+            FolderBytesCopyer.ClearFiles(absHotUpdateDllCopyTargetPath);
             Debug.Log($"Clear HotUpdateDll Completed ");
+            FolderBytesCopyer.ClearFiles(absPatchMetaDataDllCopyTargetPath);
             Debug.Log($"Clear MetaDataDll Completed");
-            if (refresh) AssetDatabase.Refresh();
+            if (needRefresh) AssetDatabase.Refresh();
 
         }
-        void ResetPathToDefault()
-        {
-            Debug.Log("FFramework.HotFixTool Path Apply Default Setting!");
-            HotFixToolSettings.DestroyImmediate(HotFixToolSettings.instance);
-            OnEnable();
-        }
 
-        string projectPath = null;
-        string ProjectPath
-        {
-            get
-            {
-                projectPath ??= Application.dataPath.Substring(0, Application.dataPath.Length - "Assets".Length);
-                return projectPath;
-            }
-        }
 
     }
 }

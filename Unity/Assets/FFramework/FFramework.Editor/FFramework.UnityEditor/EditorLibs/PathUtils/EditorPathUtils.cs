@@ -1,7 +1,7 @@
 using System.IO;
 using UnityEngine;
 
-namespace FFramework
+namespace FFramework.Utils.Editor
 {
 
 
@@ -27,23 +27,33 @@ namespace FFramework
                         m_ProjectPath ??= new System.IO.DirectoryInfo(GetLocation(EPathType.AssetPath)).Parent.FullName;
                         return m_ProjectPath;
                     }
-                case EPathType.EditorSettingPath:
+                case EPathType.ProjectSettingPath:
                     {
                         return Path.Combine(GetLocation(EPathType.AssetPath), "FFramework/FFramework.Editor/FFramework.ProjectSetting");
+                    }
+                case EPathType.PreferencePath:
+                    {
+                        return Path.Combine(GetLocation(EPathType.ProjectPath), "FFramework/Preferences");
                     }
                 case EPathType.ScriptsPath:
                     {
                         return Path.Combine(GetLocation(EPathType.AssetPath), "Scripts");
                     }
+
                 default: return string.Empty;
 
             }
         }
 
-
         public static string GetAbsLocation(EPathType type, string relativePath)
         {
             return Path.Combine(GetLocation(type), relativePath);
         }
+
+        public static bool FileExists(EPathType type, string relativePath)
+        {
+            return File.Exists(GetAbsLocation(type, relativePath));
+        }
+
     }
 }

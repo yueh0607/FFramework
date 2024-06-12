@@ -30,7 +30,7 @@ MonoBehaviour:
   strippedAOTDllOutputRootDir: HybridCLRData/AssembliesPostIl2CppStrip
   patchAOTAssemblies:
   - FFramework.AOT
-  outputLinkFile: Scripts/HybridCLRGenerate/link.xml
-  outputAOTGenericReferenceFile: Scripts/HybridCLRGenerate/AOTGenericReferences.cs
+  outputLinkFile: Scripts/Link/link.xml
+  outputAOTGenericReferenceFile: FFramework/FFramework.Editor/HotFixCopyTool/HybridCLRGenerate/AOTGenericReferences.cs
   maxGenericReferenceIteration: 10
   maxMethodBridgeGenericIteration: 10

@@ -75,10 +75,8 @@
     <type fullname="System.Collections.Generic.ICollection`1" preserve="all" />
     <type fullname="System.Collections.Generic.IEnumerable`1" preserve="all" />
     <type fullname="System.Collections.Generic.IEnumerator`1" preserve="all" />
-    <type fullname="System.Collections.Generic.IReadOnlyList`1" preserve="all" />
     <type fullname="System.Collections.Generic.KeyNotFoundException" preserve="all" />
     <type fullname="System.Collections.Generic.KeyValuePair`2" preserve="all" />
-    <type fullname="System.Collections.Generic.List`1" preserve="all" />
     <type fullname="System.Collections.IEnumerator" preserve="all" />
     <type fullname="System.Collections.Queue" preserve="all" />
     <type fullname="System.Delegate" preserve="all" />

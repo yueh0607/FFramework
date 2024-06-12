@@ -1,28 +1,22 @@
-﻿using UnityEditor;
+﻿using FFramework.Utils.Editor;
 
-namespace FFramework.HotFix.UnityEditor
+namespace FFramework.HotFix.Editor
 {
-    [FilePath("FFramework/Settings/HotFixToolSettings.asset",FilePathAttribute.Location.ProjectFolder)]
-    public class HotFixToolSettings : ScriptableSingleton<HotFixToolSettings>
+    [FilePath("HotFixToolSettings",EPathType.ProjectSettingPath)]
+    public class HotFixToolSettings : EditorDataSingleton<HotFixToolSettings>
     {
 
         /// <summary>
         /// 热更新bytes拷贝路径
         /// </summary>
-        public string hotFixBytesPath = "Assets/HotFix/HotUpdate";
+        public string hotFixBytesPath = "Res/GameLogic/HotUpdateDlls";
 
 
         /// <summary>
-        /// 元数据bytes拷贝路径
+        /// 补充元数据bytes拷贝路径
         /// </summary>
-        public string metaDataBytesPath = "Assets/HotFix/MetaData";
-
-        public string currentPlatform = string.Empty;
+        public string metaDataBytesPath = "Res/GameLogic/PatchMetaDataDlls";
 
 
-        public void Modify()
-        {
-            Save(true);
-        }
     }
 }

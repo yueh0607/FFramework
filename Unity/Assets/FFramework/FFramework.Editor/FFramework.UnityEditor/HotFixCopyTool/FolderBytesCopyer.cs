@@ -10,7 +10,7 @@ namespace FFramework.HotFix.Editor
         /// <summary>
         /// 清空指定目录的文件
         /// </summary>
-        /// <param name="path"></param>
+        /// <param name="path">绝对路径</param>
         public static void ClearFiles(string path)
         {
             if (Directory.Exists(path))
@@ -25,17 +25,15 @@ namespace FFramework.HotFix.Editor
         /// path为目录，filter为"*.dll",toPath为拷贝到目录，append
         /// 为”.bytes“
         /// </summary>
-        /// <param name="path"></param>
-        /// <param name="filter"></param>
+        /// <param name="path">绝对路径</param>
+        /// <param name="filter">过滤器</param>
         public static int CopyBytes(string path, string filter, string toPath, string appendName = ".bytes", Predicate<string> specialFilter = null)
         {
             int count = 0;
             try
             {
-                if (!Directory.Exists(toPath))
-                    Directory.CreateDirectory(toPath);
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
+                Directory.CreateDirectory(toPath);
+                Directory.CreateDirectory(path);
 
                 foreach (string file in Directory.EnumerateFiles(path))
                 {

@@ -1,14 +1,15 @@
-namespace FFramework
+namespace FFramework.Utils.Editor
 {
     public enum EPathType
     {
-        AssetPath,  //Unity AssetsÂ·¾¶
-        ProjectPath, //Unity AssetsÂ·¾¶µÄÉÏ²ãÂ·¾¶£¬°üº¬Asset¡¢LibarayµÈ
-        RootPath,    //ProjectPathµÄÉÏ²ãÂ·¾¶£¬°üº¬·ÖÎöÆ÷¡¢DotNetÏîÄ¿¡¢UnityÏîÄ¿
-        ScriptsPath, //UnityµÄScriptsÄ¿Â¼
-        AbsPath,    //¾ø¶ÔÂ·¾¶
-        EditorSettingPath,  //±à¼­Æ÷ÏîÄ¿ÉèÖÃÎÄ¼ş¼Ğ£¨¿ò¼Ü×Ô¶¨ÒåµÄ£¬²»ÊÇunityµÄ£©
-        StreamingAssetPath, 
+        AssetPath,  //Unity Assetsè·¯å¾„
+        ProjectPath, //Unity Assetsè·¯å¾„çš„ä¸Šå±‚è·¯å¾„ï¼ŒåŒ…å«Assetã€Libraryç­‰
+        RootPath,    //ProjectPathçš„ä¸Šå±‚è·¯å¾„ï¼ŒåŒ…å«åˆ†æå™¨ã€DotNeté¡¹ç›®ã€Unityé¡¹ç›®
+        ScriptsPath, //Unityçš„Scriptsç›®å½•
+        AbsPath,            //ç»å¯¹è·¯å¾„ 
+        ProjectSettingPath,  //ç¼–è¾‘å™¨é¡¹ç›®è®¾ç½®æ–‡ä»¶å¤¹ï¼ˆæ¡†æ¶è‡ªå®šä¹‰çš„ï¼Œä¸æ˜¯unityçš„ï¼‰
+        PreferencePath,    //ç¼–è¾‘å™¨åå¥½è®¾ç½®æ–‡ä»¶å¤¹ (æ¡†æ¶è‡ªå®šä¹‰çš„ï¼Œä¸æ˜¯unityçš„) 
+        StreamingAssetPath,
         PersistentDataPath,
     }
 }
