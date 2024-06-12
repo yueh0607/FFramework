@@ -1,0 +1,16 @@
+{
+    "name": "Project.AOT",
+    "rootNamespace": "Game",
+    "references": [
+        "GUID:0086669723cff0b48b5ee5d90ca569ce"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

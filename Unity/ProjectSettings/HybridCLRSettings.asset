@@ -23,11 +23,11 @@ MonoBehaviour:
   hotUpdateAssemblies:
   - Assembly-CSharp
   preserveHotUpdateAssemblies: []
-  hotUpdateDllCompileOutputRootDir: Res/HybridCLRData/HotUpdateDlls
+  hotUpdateDllCompileOutputRootDir: HybridCLRData/HotUpdateDlls
   externalHotUpdateAssembliyDirs:
   - Assets/FFramework/FFramework.Runtime/FFramework.Core/ThirdParty
   - Assets/FFramework/FFramework.Runtime/FFramework.Unity/ThirdParty
-  strippedAOTDllOutputRootDir: Res/HybridCLRData/AssembliesPostIl2CppStrip
+  strippedAOTDllOutputRootDir: HybridCLRData/AssembliesPostIl2CppStrip
   patchAOTAssemblies:
   - FFramework.AOT
   outputLinkFile: Scripts/HybridCLRGenerate/link.xml
