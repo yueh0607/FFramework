@@ -50,8 +50,11 @@ namespace FFramework.HotFix.Editor
             GUILayout.BeginHorizontal();
             var color = GUI.color;
             GUI.color = Color.green;
-            if (GUILayout.Button("重新拷贝")) ClearAndCopyHotFixDllBytes();
-            if (GUILayout.Button("重置路径")) HotFixToolSettings.Reset();
+            if (GUILayout.Button("重新拷贝")) ClearAndCopyDllBytes();
+            if (GUILayout.Button("重置路径"))
+            {
+                HotFixToolSettings.Reset();
+            }
             if (GUILayout.Button("清空拷贝")) ClearHotFixDllFiles();
             GUI.color = color;
             GUILayout.EndHorizontal();
@@ -127,7 +130,7 @@ namespace FFramework.HotFix.Editor
         }
 
 
-        public static void ClearAndCopyHotFixDllBytes()
+        public static void ClearAndCopyDllBytes()
         {
 
             LoadAllUsefulData();
@@ -148,7 +151,7 @@ namespace FFramework.HotFix.Editor
             Debug.Log($"Copy HotUpdateDll Completed ,Count: {i}");
 
             int j = FolderBytesCopyer.CopyBytes(absMetaDataDllCopyFromPath,
-                DLL_EXTENSION, absHotUpdateDllCopyTargetPath, BYTES_EXTENSION, PatchMetaAssleblyNameTest);
+                DLL_EXTENSION, absPatchMetaDataDllCopyTargetPath, BYTES_EXTENSION, PatchMetaAssleblyNameTest);
             Debug.Log($"Copy MetaDataDll Completed: Count {j}");
 
             AssetDatabase.Refresh();
