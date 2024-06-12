@@ -38,28 +38,36 @@ namespace FFramework
 
         public void AwaitOnCompleted<TAwaiter, TStateMachine>(ref TAwaiter awaiter, ref TStateMachine stateMachine) where TAwaiter : INotifyCompletion where TStateMachine : IAsyncStateMachine
         {
+            //排除任何不能兼容的Awaiter
             if (!(awaiter is IFTaskAwaiter))
                 throw new System.InvalidOperationException($"Awaiter must implement interface {nameof(IFTaskAwaiter)}");
 
             IFTaskAwaiter fTaskAwaiter = (IFTaskAwaiter)awaiter;
 
-            //TODO:如果传入的有令牌，则不能覆盖
+            //TODO:如果传入的有令牌，则不能成功覆盖令牌，阻断令牌传递流
             if (fTaskAwaiter.TokenHolder == null)              
                 fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
-            m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
 
+            //设置当前状态机所等待的的Awaiter
+            m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
+            //指定下一步的行为
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
+
+            //有令牌，且有取消请求
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
                 fTaskAwaiter.SetCanceled();
             }
+            //有令牌，且有挂起请求
             else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
             {
                 fTaskAwaiter.SetSuspend();
                 fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
             }
+            //无令牌或处于响应状态
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
+                //TODO：根据CurrentAwaiter链进行查找，找到最深的任务，如果是同步任务则完成
                 if (m_NotFirstAwait)
                 {
                     fTaskAwaiter.SetSyncSucceed();

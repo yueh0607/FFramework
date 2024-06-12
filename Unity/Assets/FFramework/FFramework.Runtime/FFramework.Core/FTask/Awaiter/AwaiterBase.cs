@@ -18,13 +18,14 @@ namespace FFramework
         public void SetSyncSucceed()
         {
             IFTaskAwaiter curAwaiter = this;
-            while (curAwaiter != null)
+            while (curAwaiter.CurrentAwaiter != null)
             {
-                if (curAwaiter is ISyncAwaiter syncAwaiter)
-                {
-                    syncAwaiter.SetSucceed();
-                }
                 curAwaiter = curAwaiter.CurrentAwaiter;
+            }
+
+            if (curAwaiter is ISyncAwaiter syncAwaiter)
+            {
+                syncAwaiter.SetSucceed();
             }
         }
 

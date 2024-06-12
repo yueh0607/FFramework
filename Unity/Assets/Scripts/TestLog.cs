@@ -30,7 +30,7 @@ public class TestLog : MonoBehaviour, IProgress<float>
         var token = await FTask.CatchToken();
         Debug.Log($"B捕获的ID：{token.ID}");
         await C();
-        //await FTask.DelaySeconds(1);
+        await FTask.DelaySeconds(1);
     }
 
 
