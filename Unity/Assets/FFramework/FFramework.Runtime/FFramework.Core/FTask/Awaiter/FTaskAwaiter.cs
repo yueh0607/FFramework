@@ -46,7 +46,7 @@ namespace FFramework
 
             void IPoolable<FTaskAwaiter>.OnSet(FTaskAwaiter obj)
             {
-                obj.Reset();
+                obj.ResetAwaiterExcludeStatus();
             }
         }
     }
@@ -99,7 +99,7 @@ namespace FFramework
 
             void IPoolable<FTaskAwaiter<T>>.OnSet(FTaskAwaiter<T> obj)
             {
-                obj.Reset();
+                obj.ResetAwaiterExcludeStatus();
                 obj.m_Result = default;
             }
         }

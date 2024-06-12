@@ -142,8 +142,6 @@ namespace FFramework
                 {
                     fTaskAwaiter.SetSyncSucceed();
                 }
-              
-
             }
 
             m_NotFirstAwait = true;

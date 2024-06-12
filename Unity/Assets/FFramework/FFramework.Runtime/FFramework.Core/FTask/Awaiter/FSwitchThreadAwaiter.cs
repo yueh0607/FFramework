@@ -55,7 +55,7 @@ namespace FFramework
 
             void IPoolable<FSwitchThreadAwaiter>.OnSet(FSwitchThreadAwaiter obj)
             {
-                obj.Reset();
+                obj.ResetAwaiterExcludeStatus();
             }
         }
     }

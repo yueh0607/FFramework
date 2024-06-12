@@ -54,7 +54,7 @@ namespace FFramework
 
             void IPoolable<FCatchTokenTaskAwaiter>.OnSet(FCatchTokenTaskAwaiter obj)
             {
-                obj.Reset();
+                obj.ResetAwaiterExcludeStatus();
             }
         }
     }

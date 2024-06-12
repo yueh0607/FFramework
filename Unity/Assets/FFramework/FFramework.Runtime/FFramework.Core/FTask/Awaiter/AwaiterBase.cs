@@ -125,7 +125,7 @@ namespace FFramework
             m_Status = FTaskStatus.Pending;
         }
 
-        internal void Reset()
+        internal void ResetAwaiterExcludeStatus()
         {
             if (!m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_NOT_FINISHED_MESSAGE);
