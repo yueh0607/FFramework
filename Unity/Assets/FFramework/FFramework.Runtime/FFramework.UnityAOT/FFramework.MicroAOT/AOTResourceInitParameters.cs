@@ -4,43 +4,38 @@ using System.Collections.Generic;
 using UnityEngine;
 using YooAsset;
 
-namespace FFramework
+namespace FFramework.MicroAOT
 {
-    public class ResourceInitParameters
+    public abstract class AOTResourceInitParameters
     {
-        //游戏默认包名
-        public string DefaultPackageName = "GameResource";
-
-        //游戏逻辑包名
-        public string GameLogicPackageName = "GameLogic";
 
         //包初始化回调
         public Action<ResourcePackage,AsyncOperationBase> InitCallback = null;
         
    
 
-        public ResourceInitParameters()
+        public AOTResourceInitParameters()
         {
 
         }
 
-        public class Simulate : ResourceInitParameters
+        public class Simulated : AOTResourceInitParameters
         {
             //加密服务
             public IDecryptionServices DecryptionServices = null;
             public string SimulateBuild()
             {
-                return EditorSimulateModeHelper.SimulateBuild(EDefaultBuildPipeline.BuiltinBuildPipeline, DefaultPackageName);
+                return EditorSimulateModeHelper.SimulateBuild(EDefaultBuildPipeline.BuiltinBuildPipeline, AOTStartInfoManager.GameResourcePackageName);
             }
         }
 
-        public class Offline : ResourceInitParameters
+        public class Offline : AOTResourceInitParameters
         {
             //加密服务
             public IDecryptionServices DecryptionServices = null;
         }
 
-        public class Host : ResourceInitParameters
+        public class Host : AOTResourceInitParameters
         {
             public string DefaultHostServer = "http://127.0.0.1/CDN/WebGL/v1.0";
             public string FallbackHostServer = "http://127.0.0.1/CDN/WebGL/v1.0";
@@ -52,7 +47,7 @@ namespace FFramework
 
      
         }
-        public class WebGL : ResourceInitParameters
+        public class WebGL : AOTResourceInitParameters
         {
             public string DefaultHostServer = "http://127.0.0.1/CDN/WebGL/v1.0";
             public string FallbackHostServer = "http://127.0.0.1/CDN/WebGL/v1.0";

@@ -11,10 +11,7 @@ namespace FFramework
         private void Awake()
         {
             m_UnityEnvirment = new UnityEnvirment();  
-         
             m_EventModule = m_UnityEnvirment.GetModule<EventModule>();
-
-            DontDestroyOnLoad(gameObject);
         }
 
 

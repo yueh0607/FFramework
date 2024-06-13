@@ -44,4 +44,30 @@ MonoBehaviour:
     IncludeAssetGUID: 0
     AutoCollectShaders: 1
     IgnoreRuleName: NormalIgnoreRule
-    Groups: []
+    Groups:
+    - GroupName: PatchMetaDataBytes
+      GroupDesc: "\u8865\u5145\u5143\u6570\u636EDLL"
+      AssetTags: PatchMetaDataAssemblies
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Res/GameLogic/PatchMetaDataDlls
+        CollectorGUID: a85f6d56543383d4199ed2ec4adf150b
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackRawFile
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
+    - GroupName: HotUpdateBytes
+      GroupDesc: "\u70ED\u66F4\u65B0\u7A0B\u5E8F\u96C6DLL"
+      AssetTags: HotUpdateAssemblies
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Res/GameLogic/HotUpdateDlls
+        CollectorGUID: bdcb616f9237d2b42907e2cfcc9ea02a
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackRawFile
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 

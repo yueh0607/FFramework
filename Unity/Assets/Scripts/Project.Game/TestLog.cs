@@ -12,9 +12,6 @@ public class TestLog : MonoBehaviour, IProgress<float>
 
     async FTask A()
     {
-        ResourceInitParameters param = new ResourceInitParameters.Simulate();
-
-        await FResource.Initialize(param);
         var loadhandle = FResource.LoadAssetAsync<GameObject>("UIRoot");
         await loadhandle.EnsureDone(this);
     }
@@ -44,8 +41,6 @@ public class TestLog : MonoBehaviour, IProgress<float>
         Envirment.Current.CreateModule<UnityResourceModule>();
         B().Forget(token1);
         A().Forget(token1);
-
-
     }
 
     public void Report(float value)
