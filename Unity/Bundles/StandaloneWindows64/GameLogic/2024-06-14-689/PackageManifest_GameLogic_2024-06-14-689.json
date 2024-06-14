@@ -1,0 +1,203 @@
+{
+    "FileVersion": "2.0.0",
+    "EnableAddressable": false,
+    "LocationToLower": false,
+    "IncludeAssetGUID": true,
+    "OutputNameStyle": 2,
+    "BuildPipeline": "RawFileBuildPipeline",
+    "PackageName": "GameLogic",
+    "PackageVersion": "2024-06-14-689",
+    "AssetList": [
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/FFramework.AOT.dll.bytes",
+            "AssetGUID": "03995373ca4292f43acc1f9d554a97b3",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 0
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/mscorlib.dll.bytes",
+            "AssetGUID": "35939f2180307c044b6234be4b95e93c",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 1
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/System.Core.dll.bytes",
+            "AssetGUID": "5699aa5e597aa3b478261bdde4976ee9",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 2
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/System.dll.bytes",
+            "AssetGUID": "81bf6e8ae6b81d94dbeb91715b618c80",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 3
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/System.Runtime.CompilerServices.Unsafe.dll.bytes",
+            "AssetGUID": "1173884163f4f504796d890297196904",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 4
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/PatchMetaDataDlls/UnityEngine.CoreModule.dll.bytes",
+            "AssetGUID": "608f1ed54d80cab479beb1fb96b399d0",
+            "AssetTags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "BundleID": 5
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/HotUpdateDlls/Assembly-CSharp.dll.bytes",
+            "AssetGUID": "7c6c38db561f9a542853170b8f9dd02c",
+            "AssetTags": [
+                "HotUpdateAssemblies"
+            ],
+            "BundleID": 6
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/HotUpdateDlls/FFramework.Core.dll.bytes",
+            "AssetGUID": "b489cb79c39943e4f9b4c8cf8196c6be",
+            "AssetTags": [
+                "HotUpdateAssemblies"
+            ],
+            "BundleID": 7
+        },
+        {
+            "Address": "",
+            "AssetPath": "Assets/Res/GameLogic/HotUpdateDlls/FFramework.UnityRuntime.dll.bytes",
+            "AssetGUID": "d1e935a765558964e8dccc75cf9cc5cc",
+            "AssetTags": [
+                "HotUpdateAssemblies"
+            ],
+            "BundleID": 8
+        }
+    ],
+    "BundleList": [
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_fframework_aot_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "8b3ad8777cbf6d245d2611c1aa56538e",
+            "FileCRC": "7c4d8cdc",
+            "FileSize": 188928,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_mscorlib_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "b4a2641c4f047ef44d114b062dde26e2",
+            "FileCRC": "2aecf1d9",
+            "FileSize": 2482688,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_system_core_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "8215f830a839590c4dd9c9a04bd6ad23",
+            "FileCRC": "8610d932",
+            "FileSize": 118784,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_system_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "e9ede67a455eb33c8081ff70c54d85d7",
+            "FileCRC": "8c1ff8f8",
+            "FileSize": 657408,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_system_runtime_compilerservices_unsafe_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "39c0d15ae179ed533fdb5d925ca7f8b6",
+            "FileCRC": "5dfd23b0",
+            "FileSize": 8192,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_patchmetadatadlls_unityengine_coremodule_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "a42807e1db45f51f079329854ea7702b",
+            "FileCRC": "3d1e179c",
+            "FileSize": 292352,
+            "Encrypted": false,
+            "Tags": [
+                "PatchMetaDataAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_hotupdatedlls_assembly-csharp_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "d7b7077308df5bde74ccd9d9412d89bf",
+            "FileCRC": "a05a5536",
+            "FileSize": 4608,
+            "Encrypted": false,
+            "Tags": [
+                "HotUpdateAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_hotupdatedlls_fframework_core_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "2a9ed2705949ec22f44ccfe82c80793b",
+            "FileCRC": "3a198d6e",
+            "FileSize": 144384,
+            "Encrypted": false,
+            "Tags": [
+                "HotUpdateAssemblies"
+            ],
+            "DependIDs": []
+        },
+        {
+            "BundleName": "gamelogic_assets_res_gamelogic_hotupdatedlls_fframework_unityruntime_dll_bytes.rawfile",
+            "UnityCRC": 0,
+            "FileHash": "7cd2d06771602fd02c2763da0577702a",
+            "FileCRC": "600a95f8",
+            "FileSize": 21504,
+            "Encrypted": false,
+            "Tags": [
+                "HotUpdateAssemblies"
+            ],
+            "DependIDs": []
+        }
+    ]
+}

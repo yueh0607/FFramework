@@ -41,14 +41,20 @@ namespace FFramework.MicroAOT
                 case ERunMode.Simulated:
                     {
                         m_ResParams = new AOTResourceInitParameters.Simulated();
-                        yield return AOTResourceManager.Instance.Initialize(m_ResParams);
+                        
                         break;
                     }
                 case ERunMode.Real:
                     {
+                        m_ResParams = new AOTResourceInitParameters.Offline()
+                        {
+
+                        };
+                         
                         break;
                     }
             }
+            yield return AOTResourceManager.Instance.Initialize(m_ResParams);
         }
         #endregion
 

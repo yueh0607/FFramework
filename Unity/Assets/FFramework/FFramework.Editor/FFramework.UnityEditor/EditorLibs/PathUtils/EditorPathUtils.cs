@@ -50,9 +50,27 @@ namespace FFramework.Utils.Editor
             return Path.Combine(GetLocation(type), relativePath);
         }
 
-        public static bool FileExists(EPathType type, string relativePath)
+        public static bool FileExist(EPathType type, string relativePath)
         {
             return File.Exists(GetAbsLocation(type, relativePath));
+        }
+
+        public static void EnsureFileExist(EPathType type,string relativePath)
+        {
+            if(!FileExist(type,relativePath))
+            {
+                File.Create(GetAbsLocation(type, relativePath)).Dispose();
+            }
+        }
+
+        public static bool DirectoryExist(EPathType type,string relativePath)
+        {
+            return Directory.Exists(GetAbsLocation(type, relativePath));
+        }
+
+        public static void EnsureDirectoryExist(EPathType type,string relativePath)
+        {
+            Directory.CreateDirectory(GetAbsLocation(type, relativePath));
         }
 
     }

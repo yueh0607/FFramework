@@ -30,7 +30,7 @@ namespace FFramework
 
             var panelPrefab = YooAssets.LoadAssetAsync<GameObject>(location);
             yield return panelPrefab;
-            var ins = panelPrefab.InstantiateAsync();
+            var ins = panelPrefab.InstantiateAsync(m_PanelRoot);
             yield return ins;
 
             panelPrefab.Release();

@@ -1,0 +1,7 @@
+ManifestFileVersion: 0
+CRC: 370312436
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: gameresource_assets_arts_prefabs.bundle
+      Dependencies: {}

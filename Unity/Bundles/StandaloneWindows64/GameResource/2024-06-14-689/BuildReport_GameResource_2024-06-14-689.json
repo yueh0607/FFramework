@@ -1,0 +1,58 @@
+{
+    "Summary": {
+        "YooVersion": "",
+        "UnityVersion": "2022.3.30f1",
+        "BuildDate": "2024/6/14 11:29:30",
+        "BuildSeconds": 2,
+        "BuildTarget": 19,
+        "BuildMode": 0,
+        "BuildPipeline": "BuiltinBuildPipeline",
+        "BuildPackageName": "GameResource",
+        "BuildPackageVersion": "2024-06-14-689",
+        "UniqueBundleName": true,
+        "EnableAddressable": true,
+        "LocationToLower": false,
+        "IncludeAssetGUID": true,
+        "AutoCollectShaders": true,
+        "IgnoreRuleName": "YooAsset.Editor.NormalIgnoreRule",
+        "EnableSharePackRule": true,
+        "EncryptionClassName": "null",
+        "FileNameStyle": 0,
+        "CompressOption": 2,
+        "DisableWriteTypeTree": false,
+        "IgnoreTypeTreeChanges": true,
+        "AssetFileTotalCount": 1,
+        "MainAssetTotalCount": 1,
+        "AllBundleTotalCount": 1,
+        "AllBundleTotalSize": 3058,
+        "EncryptedBundleTotalCount": 0,
+        "EncryptedBundleTotalSize": 0
+    },
+    "AssetInfos": [
+        {
+            "Address": "UIRoot",
+            "AssetPath": "Assets/Arts/Prefabs/UIRoot.prefab",
+            "AssetGUID": "7131fc19e1175e542a3479ebd8e631bc",
+            "AssetTags": [],
+            "MainBundleName": "gameresource_assets_arts_prefabs.bundle",
+            "MainBundleSize": 3058,
+            "DependAssets": []
+        }
+    ],
+    "BundleInfos": [
+        {
+            "BundleName": "gameresource_assets_arts_prefabs.bundle",
+            "FileName": "d5d267092942ff3b6e689c20e54fcec1.bundle",
+            "FileHash": "d5d267092942ff3b6e689c20e54fcec1",
+            "FileCRC": "14acfba0",
+            "FileSize": 3058,
+            "Encrypted": false,
+            "Tags": [],
+            "DependBundles": [],
+            "AllBuiltinAssets": [
+                "Assets/Arts/Prefabs/UIRoot.prefab"
+            ]
+        }
+    ],
+    "IndependAssets": []
+}

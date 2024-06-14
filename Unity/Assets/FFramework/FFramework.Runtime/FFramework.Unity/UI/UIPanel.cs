@@ -1,13 +1,12 @@
-﻿using UnityEngine;
+﻿using Sirenix.OdinInspector;
+using System.Collections.Generic;
+using UnityEngine;
 
 namespace FFramework
 {
-    public class UIPanel : MonoBehaviour
+    public class UIPanel : MonoBehaviour, IView
     {
-        [Bind("CloseButton","onClick")]
-        void OnClick()
-        {
-
-        }
+        [LabelText("组件")]
+        public List<ComponentGroup> Components = new List<ComponentGroup>();
     }
 }

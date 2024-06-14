@@ -19,6 +19,15 @@ namespace FFramework
             return handle;
         }
 
+        public string[] LoadAssetAsyncByTag(string tag)
+        {
+            var assetInfos = YooAssets.GetAssetInfos(tag);
+            string[] paths = new string[assetInfos.Length];
+            for (int i = 0; i < paths.Length; i++)
+                paths[i] = assetInfos[i].AssetPath;
+            return paths;
+        }
+
         /// <summary>
         /// 加载原生资源（bytes、text）
         /// </summary>

@@ -1,0 +1,31 @@
+{
+    "FileVersion": "2.0.0",
+    "EnableAddressable": true,
+    "LocationToLower": false,
+    "IncludeAssetGUID": true,
+    "OutputNameStyle": 0,
+    "BuildPipeline": "BuiltinBuildPipeline",
+    "PackageName": "GameResource",
+    "PackageVersion": "2024-06-14-689",
+    "AssetList": [
+        {
+            "Address": "UIRoot",
+            "AssetPath": "Assets/Arts/Prefabs/UIRoot.prefab",
+            "AssetGUID": "7131fc19e1175e542a3479ebd8e631bc",
+            "AssetTags": [],
+            "BundleID": 0
+        }
+    ],
+    "BundleList": [
+        {
+            "BundleName": "gameresource_assets_arts_prefabs.bundle",
+            "UnityCRC": 2287280015,
+            "FileHash": "d5d267092942ff3b6e689c20e54fcec1",
+            "FileCRC": "14acfba0",
+            "FileSize": 3058,
+            "Encrypted": false,
+            "Tags": [],
+            "DependIDs": []
+        }
+    ]
+}
