@@ -2,17 +2,17 @@ using UnityEngine;
 namespace FFramework
 {
     [ViewBase]
-    public abstract class View : MonoBehaviour
+    public abstract class View : MonoBehaviour, IView
     {
-      
+
     }
 }
 
 namespace FFramework.Views
 {
-    [MVVMNamespace]
+    [ViewNamespace]
     class RefCacheNamespace
     {
-        
+
     }
 }

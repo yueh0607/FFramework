@@ -1,7 +1,7 @@
 ﻿namespace FFramework
 {
     [ModuleStatic("FUI")]
-    public class FUIModule : IModule
+    public class UIModule : IModule
     {
         void IModule.OnCreate(object moduleParameter)
         {

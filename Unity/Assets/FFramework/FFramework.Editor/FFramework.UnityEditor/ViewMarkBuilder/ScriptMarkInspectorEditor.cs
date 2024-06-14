@@ -98,12 +98,12 @@ namespace FFramework.ViewMark.Editor
             //搜索命名空间
             namepsaces ??= AppDomain.CurrentDomain.GetAssemblies()
                     .SelectMany((x) => x.GetTypes())
-                    .Where((x) => x.GetCustomAttribute<MVVMNamespaceAttribute>() != null)
+                    .Where((x) => x.GetCustomAttribute<ViewNamespaceAttribute>() != null)
                     .Select((x) => x.Namespace)
                     .Distinct()
                     .ToList();
 
-            Debug.Log("OnEnable");
+            //Debug.Log("OnEnable");
             //更新初始View名称
             if (viewName.stringValue == string.Empty)
             {
@@ -444,7 +444,7 @@ namespace #NAMESPACE#
     {{
 #FIELDS#
 
-        public void InitRefs()
+        public virtual void Awake()
         {{
 #INIT#
         }}
@@ -452,8 +452,8 @@ namespace #NAMESPACE#
 }}
 ";
             Type viewBaseType = Type.GetType(this.viewBaseType.stringValue);
-            string threeTab = "\t\t\t";
-            string fourTab = "\t\t\t\t";
+            string threeTab = "\t\t";
+            string fourTab = "\t\t\t";
             string componentFieldsStringJoin = threeTab + string.Join(System.Environment.NewLine + threeTab, componentFieldsString);
             string componentFindStringJoin = fourTab + string.Join(System.Environment.NewLine + fourTab, componentFindString);
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading;
 
@@ -9,7 +10,7 @@ namespace FFramework
     //环境：每个Envirment必须独占一个线程、独占一个框架核心，以保证无锁并发
     public abstract partial class Envirment : FDispoableUnit
     {
-        public abstract FSynchronizationContext MailBox { get;protected set; }
+        public abstract FSynchronizationContext MailBox { get; protected set; }
 
         private EventModule m_EventModule;
 
@@ -23,7 +24,7 @@ namespace FFramework
                 throw new System.Exception("Envirment must be unique in a thread");
             m_Thread = thread;
 
-            if(MailBox==null) 
+            if (MailBox == null)
                 throw new System.NullReferenceException("MailBox is null");
 
             MailBox.BelongEnvirment = this;
@@ -73,16 +74,34 @@ namespace FFramework
     {
         private Dictionary<Type, IModule> m_ContextModules = new Dictionary<Type, IModule>();
 
-
+        private List<Type> m_ModuleTypeCache = new List<Type>();
         public void CreateModule<T>(object moduleParameter = null) where T : IModule, new()
         {
+            m_ModuleTypeCache.Clear();
+            Type moduleType = typeof(T);
+            m_ModuleTypeCache.Add(moduleType);
+
             if (m_ContextModules.ContainsKey(typeof(T)))
-            {
-                throw new ArgumentException("Module with the same ID already exists.", typeof(T).FullName);
-            }
+                throw new ArgumentException("Module with the same ID already exists.", moduleType.BaseType.FullName);
             IModule module = new T();
-            module.OnCreate(moduleParameter);
+           
             m_ContextModules.Add(typeof(T), module);
+
+
+            while (moduleType.BaseType != null)
+            {
+                
+                if (!typeof(IModule).IsAssignableFrom(moduleType.BaseType) || moduleType.BaseType.GetCustomAttribute<ModuleVagueAttribute>()==null)
+                    continue;
+
+                if (m_ContextModules.ContainsKey(typeof(T)))
+                    throw new ArgumentException("Module with the same ID already exists.", moduleType.BaseType.FullName);
+                
+                m_ContextModules.Add(moduleType.BaseType, module);
+                moduleType = moduleType.BaseType;
+
+            }
+            module.OnCreate(moduleParameter);
         }
 
         public void DestroyModule<T>()

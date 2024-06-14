@@ -2,7 +2,7 @@ using FFramework;
 
 namespace Game.Views
 {
-    [MVVMNamespace]
+    [ViewNamespace]
     [ViewBase]
     public class CustomView : View
     {
