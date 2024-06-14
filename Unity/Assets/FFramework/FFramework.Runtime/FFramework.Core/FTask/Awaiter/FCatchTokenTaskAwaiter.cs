@@ -6,6 +6,7 @@ namespace FFramework
 
         public FCancellationToken GetResult()
         {
+            OnGetResult();
             return m_TokenHolder;
         }
 
@@ -18,7 +19,7 @@ namespace FFramework
             m_Status = FTaskStatus.Succeed;
 
             BindTask.Flow?.OnSucceed();
-            ((Action)m_ContinuationOrExceptionDispatchInfo).Invoke();
+            ((Action)m_Continuation).Invoke();
 
             Recycle(BindTask);
         }

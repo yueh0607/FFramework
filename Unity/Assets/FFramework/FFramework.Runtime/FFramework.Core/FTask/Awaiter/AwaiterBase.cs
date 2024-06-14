@@ -32,7 +32,8 @@ namespace FFramework
 
         public bool IsCompleted { get; private set; } = false;
 
-        protected System.Object m_ContinuationOrExceptionDispatchInfo = null;
+        protected System.Action m_Continuation = null;
+        protected ExceptionDispatchInfo m_ExceoptionInfo = null;
 
         internal IFTask BindTask { get; set; } = null;
 
@@ -56,13 +57,13 @@ namespace FFramework
 
         void INotifyCompletion.OnCompleted(System.Action continuation)
         {
-            this.m_ContinuationOrExceptionDispatchInfo = continuation;
-          
+            this.m_Continuation = continuation;
+
         }
         void ICriticalNotifyCompletion.UnsafeOnCompleted(System.Action continuation)
         {
-            this.m_ContinuationOrExceptionDispatchInfo = continuation;
-        
+            this.m_Continuation = continuation;
+
         }
 
 
@@ -85,12 +86,18 @@ namespace FFramework
 
         public void SetFailed(ExceptionDispatchInfo exceptionDispatchInfo)
         {
-            m_ContinuationOrExceptionDispatchInfo = exceptionDispatchInfo;
+            if (m_Status.IsFinished())
+                throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
+
+            m_ExceoptionInfo = exceptionDispatchInfo;
             m_Status = FTaskStatus.Failed;
-
-
             BindTask.Flow?.OnFailed();
-            exceptionDispatchInfo.Throw();
+         
+            BindTask.Flow?.OnSucceed();
+            m_Continuation?.Invoke();
+
+            Recycle(BindTask);
+
         }
 
         public void SetCanceled()
@@ -104,7 +111,7 @@ namespace FFramework
             if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
                 BindTask.Flow.OnCancel();
 
-            ((System.Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
+            ((System.Action)m_Continuation)?.Invoke();
             Recycle(BindTask);
         }
 
@@ -135,15 +142,22 @@ namespace FFramework
             if (!m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_NOT_FINISHED_MESSAGE);
 
-            m_ContinuationOrExceptionDispatchInfo = null;
+            m_Continuation = null;
+            m_ExceoptionInfo = null;
 
             if (TokenHolder != null && TokenHolder.Flow == BindTask.Flow)
                 TokenHolder.Flow = null;
             m_TokenHolder = null;
+
         }
 
         protected abstract void Recycle(IFTask task);
 
+
+        protected void OnGetResult()
+        {
+            m_ExceoptionInfo?.Throw();
+        }
 
     }
 }

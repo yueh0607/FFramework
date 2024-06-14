@@ -4,7 +4,7 @@ namespace FFramework
 {
     public class FTaskAwaiter : AwaiterBase, IFTaskNotGenericAwaiter
     {
-        public void GetResult() { }
+        public void GetResult() { OnGetResult(); }
 
         public void SetSucceed()
         {
@@ -14,7 +14,7 @@ namespace FFramework
             m_Status = FTaskStatus.Succeed;
 
             BindTask.Flow?.OnSucceed();
-            ((Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
+            ((Action)m_Continuation)?.Invoke();
 
             Recycle(BindTask);
         }
@@ -67,7 +67,7 @@ namespace FFramework
             m_Status = FTaskStatus.Succeed;
 
             BindTask.Flow?.OnSucceed();
-            ((Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
+            ((Action)m_Continuation)?.Invoke();
 
             Recycle(BindTask);
         }

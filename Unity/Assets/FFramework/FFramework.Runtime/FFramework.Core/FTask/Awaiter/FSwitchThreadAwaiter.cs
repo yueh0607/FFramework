@@ -8,7 +8,7 @@ namespace FFramework
         
         public void GetResult()
         {
-
+            OnGetResult();
         }
 
         public void SetSucceed()
@@ -25,7 +25,7 @@ namespace FFramework
 
         void WaitCallback(object state)
         {
-            ((Action)m_ContinuationOrExceptionDispatchInfo)?.Invoke();
+            ((Action)m_Continuation)?.Invoke();
         }
 
         protected override void Recycle(IFTask task)
