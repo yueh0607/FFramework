@@ -42,6 +42,19 @@ MonoBehaviour:
       AssetTags: AOT
       ActiveRuleName: EnableGroup
       Collectors: []
+    - GroupName: Scene
+      GroupDesc: 
+      AssetTags: 
+      ActiveRuleName: EnableGroup
+      Collectors:
+      - CollectPath: Assets/Scenes/HotUpdate
+        CollectorGUID: 79568cbef1463e543ba243a60bdf05de
+        CollectorType: 0
+        AddressRuleName: AddressByFileName
+        PackRuleName: PackDirectory
+        FilterRuleName: CollectAll
+        AssetTags: 
+        UserData: 
   - PackageName: GameLogic
     PackageDesc: "\u6E38\u620F\u903B\u8F91\u5305"
     EnableAddressable: 0

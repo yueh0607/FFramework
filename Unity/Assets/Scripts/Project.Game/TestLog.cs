@@ -2,49 +2,34 @@
 using System;
 using System.Collections;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 
-public class TestLog : MonoBehaviour, IProgress<float>
+public class TestLog : MonoBehaviour
+
 {
 
-    async FTask A()
-    {
-        var loadhandle = FResource.LoadAssetAsync<GameObject>("UIRoot");
-        await loadhandle.EnsureDone(this);
-    }
-
-    async FTask C()
-    {
-        var token = await FTask.CatchToken();
-        Debug.Log($"C捕获的ID：{token.ID}");
-    }
-
-    async FTask B()
-    {
-        var token = await FTask.CatchToken();
-        Debug.Log($"B捕获的ID：{token.ID}");
-        await C();
-        await FTask.DelaySeconds(1);
-    }
 
 
-    FCancellationToken token1 = new FCancellationToken();
+  
 
     public void Start()
     {
-        FTask.Tick(TimeSpan.FromSeconds(1), (time) => Debug.Log($"现在是第{time.TotalSeconds}秒")).CancelAfterSeconds(100);
-        Debug.Log($"传入A的令牌ID：{token1.ID}");
+        Debug.Log($"主线程ID: {Thread.CurrentThread.ManagedThreadId}");
 
-        Envirment.Current.CreateModule<UnityResourceModule>();
-        B().Forget(token1);
-        A().Forget(token1);
+        SynchronizationContext.Current.Post((x) =>
+        {
+            Debug.Log($"从主线程Post到的线程ID: {Thread.CurrentThread.ManagedThreadId}");
+        }, null);
+
+ 
+     
+
+
     }
 
-    public void Report(float value)
-    {
-        Debug.Log("加载进度：" + value);
-    }
+
 }

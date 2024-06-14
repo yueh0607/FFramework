@@ -46,14 +46,25 @@ namespace FFramework.MicroAOT
         /// <returns></returns>
         public IEnumerator LoadHotUpdateAssemblies(bool isSimulated)
         {
-
-            void InvokeEntry(Assembly ass)
+            List<ValueTuple<int, MethodInfo>> m_Calls = new List<(int, MethodInfo)>();
+            void InvokeEntry(Assembly ass, List<ValueTuple<int, MethodInfo>> callList)
             {
                 var entryType = ass.GetType(AOTStartInfoManager.HotUpdateEntryClass, false);
                 if (entryType == null) return;
                 var method = entryType.GetMethod(AOTStartInfoManager.HotUpdateEntryMethod, BindingFlags.Static | BindingFlags.Public);
                 if (method == null) return;
-                _ = method.Invoke(null, null);
+
+                var att = method.GetCustomAttribute<EntryPriorityAttribute>();
+                callList.Add((att == null ? 0 : att.Priority, method));
+            }
+
+            void InvokeByPriority(List<ValueTuple<int, MethodInfo>> callList)
+            {
+                callList.Sort((x, y) => y.Item1 - x.Item1);
+                foreach (var callItem in callList)
+                {
+                    _ = callItem.Item2.Invoke(null, null);
+                }
             }
 
             if (!isSimulated)
@@ -77,22 +88,26 @@ namespace FFramework.MicroAOT
                 {
                     hotUpdateAssemblies[i] = Assembly.Load(handles[i].GetRawFileData());
 
-                    InvokeEntry(hotUpdateAssemblies[i]);
+                    InvokeEntry(hotUpdateAssemblies[i], m_Calls);
+
                 }
+                InvokeByPriority(m_Calls);
             }
             else
             {
 
                 var method = (Assembly.Load("FFramework.UnityEditor")?.GetType("FFramework.HotFix.Editor.HotFixTool", true)
                     ?.GetMethod("GetHotUpdateAssemblyNames", BindingFlags.Static | BindingFlags.Public)) ?? throw new InvalidProgramException("FFramework cannot find a method to get hot update assemblies name");
+
                 List<string> result = (List<string>)method.Invoke(null, null);
 
                 List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
-                    .Where((x) => result.Contains(x.GetName().Name))
+                    .Where((x) =>result.Contains(x.GetName().Name))
                     .ToList();
 
                 foreach (var ass in assemblies)
-                    InvokeEntry(ass);
+                    InvokeEntry(ass, m_Calls);
+                InvokeByPriority(m_Calls);
 
             }
         }

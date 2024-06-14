@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using System;
+using System.Runtime.ExceptionServices;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace FFramework
@@ -8,6 +10,8 @@ namespace FFramework
         public Task InvokeTask { get; set; }
 
         public ISucceedCallback BindTask { get; set; }
+
+        public IFTaskAwaiter ExceptionCallback { get; set; }
 
         public CancellationTokenSource BindToken { get; set; }
 
@@ -49,14 +53,25 @@ namespace FFramework
 
         async void RunTask(Task task)
         {
-            await task;
-            if (BindToken != null && BindToken.IsCancellationRequested) return;
-            //在主线程找合适的时机完成
-            context.Post((state) =>
+            try
             {
+                await task;
                 if (BindToken != null && BindToken.IsCancellationRequested) return;
-                BindTask.SetSucceed();
-            }, null);
+                //在主线程找合适的时机完成
+                context.Post((state) =>
+                {
+                    if (BindToken != null && BindToken.IsCancellationRequested) return;
+                    BindTask.SetSucceed();
+                }, null);
+            }
+            catch(Exception e)
+            {
+                //在主线程找合适的时机完成
+                context.Post((state) =>
+                {
+                    ExceptionCallback.SetFailed(ExceptionDispatchInfo.Capture(e));
+                }, null);
+            }
         }
 
 

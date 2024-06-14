@@ -90,9 +90,12 @@ namespace FFramework
 
             while (moduleType.BaseType != null)
             {
-                
-                if (!typeof(IModule).IsAssignableFrom(moduleType.BaseType) || moduleType.BaseType.GetCustomAttribute<ModuleVagueAttribute>()==null)
+
+                if (!typeof(IModule).IsAssignableFrom(moduleType.BaseType) || moduleType.BaseType.GetCustomAttribute<ModuleVagueAttribute>() == null)
+                {
+                    moduleType = moduleType.BaseType;
                     continue;
+                }
 
                 if (m_ContextModules.ContainsKey(typeof(T)))
                     throw new ArgumentException("Module with the same ID already exists.", moduleType.BaseType.FullName);

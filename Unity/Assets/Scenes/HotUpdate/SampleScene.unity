@@ -405,26 +405,14 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1858713706}
-  - component: {fileID: 1858713705}
+  - component: {fileID: 1858713707}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: "\u6D4B\u8BD5\u7269\u4F53"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1858713705
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1858713704}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4eab217f2eeb2f3408d6f4e940052598, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!4 &1858713706
 Transform:
   m_ObjectHideFlags: 0
@@ -440,6 +428,28 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1858713707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1858713704}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ae68113a4a8a00742aebc81d5fb3f7db, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  buildComponents:
+  - {fileID: 1858713706}
+  buildProperties:
+  - 
+  ViewPath: Scripts/Project.Game/Views
+  ViewName: MyView
+  ViewBaseType: Game.Views.CustomView, Project.Game, Version=0.0.0.0, Culture=neutral,
+    PublicKeyToken=null
+  ViewNameSpace: FFramework.Views
+  ViewDescription: "\u5F88\u597D\u7684\u4E00\u4E2A\u8BD5\u56FE"
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

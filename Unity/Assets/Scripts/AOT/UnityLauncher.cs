@@ -1,10 +1,11 @@
 
 using System.Collections;
 using UnityEngine;
-using System;
+using UnityEngine.SceneManagement;
+using YooAsset;
+
 
 #if UNITY_EDITOR
-using UnityEditor;
 #endif
 
 namespace FFramework.MicroAOT
@@ -24,6 +25,7 @@ namespace FFramework.MicroAOT
 
             yield return InitResource();
             yield return InitHotUpdate();
+  
         }
 
 
