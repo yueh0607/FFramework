@@ -4,7 +4,7 @@
     "LocationToLower": false,
     "IncludeAssetGUID": false,
     "OutputNameStyle": 0,
-    "BuildPipeline": "BuiltinBuildPipeline",
+    "BuildPipeline": "RawFileBuildPipeline",
     "PackageName": "GameLogic",
     "PackageVersion": "Simulate",
     "AssetList": [
@@ -88,15 +88,6 @@
                 "HotUpdateAssemblies"
             ],
             "BundleID": 8
-        },
-        {
-            "Address": "",
-            "AssetPath": "Assets/Res/GameLogic/HotUpdateDlls/Project.Game.dll.bytes",
-            "AssetGUID": "",
-            "AssetTags": [
-                "HotUpdateAssemblies"
-            ],
-            "BundleID": 9
         }
     ],
     "BundleList": [
@@ -105,7 +96,7 @@
             "UnityCRC": 0,
             "FileHash": "da0158ebbaf505cf923308e093d91b9d",
             "FileCRC": "00000000",
-            "FileSize": 176640,
+            "FileSize": 188928,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -115,7 +106,7 @@
             "UnityCRC": 0,
             "FileHash": "f3bf93c09bc1f1a4e41deb44a645a05c",
             "FileCRC": "00000000",
-            "FileSize": 2082816,
+            "FileSize": 2482688,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -125,7 +116,7 @@
             "UnityCRC": 0,
             "FileHash": "d930d3ddf8bdae90ffa6306dc0c28181",
             "FileCRC": "00000000",
-            "FileSize": 41984,
+            "FileSize": 118784,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -135,7 +126,7 @@
             "UnityCRC": 0,
             "FileHash": "59035874c56c76baa4cc2d56489747dc",
             "FileCRC": "00000000",
-            "FileSize": 200704,
+            "FileSize": 657408,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -155,7 +146,7 @@
             "UnityCRC": 0,
             "FileHash": "1a88f35753654220e37232da9b6d6914",
             "FileCRC": "00000000",
-            "FileSize": 321536,
+            "FileSize": 292352,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -175,7 +166,7 @@
             "UnityCRC": 0,
             "FileHash": "41675b41915dbf1a8142aa53dc367a2a",
             "FileCRC": "00000000",
-            "FileSize": 93696,
+            "FileSize": 144384,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -185,17 +176,7 @@
             "UnityCRC": 0,
             "FileHash": "2162dcac97db9f61f6502c6aced66a1e",
             "FileCRC": "00000000",
-            "FileSize": 31744,
-            "Encrypted": false,
-            "Tags": [],
-            "DependIDs": []
-        },
-        {
-            "BundleName": "gamelogic_assets_res_gamelogic_hotupdatedlls_project_game_dll_bytes.rawfile",
-            "UnityCRC": 0,
-            "FileHash": "e6576ade50e438f89c68b54e95886cb6",
-            "FileCRC": "00000000",
-            "FileSize": 8704,
+            "FileSize": 21504,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []

@@ -1,17 +1,32 @@
+
 using System.Collections;
 using UnityEngine;
+using System;
+
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
+
 namespace FFramework.MicroAOT
 {
     public class UnityLauncher : MonoBehaviour
     {
-        private void Awake() => this.StartCoroutine(LoadGameFlow());
+        private void Awake()
+        {
 
-        
+            this.StartCoroutine(LoadGameFlow());
+
+        }
+
+
         IEnumerator LoadGameFlow()
         {
+
             yield return InitResource();
             yield return InitHotUpdate();
         }
+
+
 
 
         #region 资源加载初始化
@@ -19,8 +34,21 @@ namespace FFramework.MicroAOT
         private AOTResourceInitParameters m_ResParams;
         IEnumerator InitResource()
         {
-            m_ResParams = new AOTResourceInitParameters.Simulated();
-            yield return AOTResourceManager.Instance.Initialize(m_ResParams);
+            var mode = ModeHelper.GetRunMode();
+
+            switch (mode)
+            {
+                case ERunMode.Simulated:
+                    {
+                        m_ResParams = new AOTResourceInitParameters.Simulated();
+                        yield return AOTResourceManager.Instance.Initialize(m_ResParams);
+                        break;
+                    }
+                case ERunMode.Real:
+                    {
+                        break;
+                    }
+            }
         }
         #endregion
 
@@ -28,8 +56,26 @@ namespace FFramework.MicroAOT
 
         IEnumerator InitHotUpdate()
         {
-            yield return AOTHotUpdateManager.Instance.PatchMetaData();
-            yield return AOTHotUpdateManager.Instance.LoadHotUpdateAssemblies();
+
+            var mode = ModeHelper.GetRunMode();
+            bool isSimulated = false;
+            switch (mode)
+            {
+                case ERunMode.Simulated:
+                    {
+                        isSimulated = true;
+                        break;
+                    }
+                case ERunMode.Real:
+                    {
+                        isSimulated = false;
+                        break;
+                    }
+            }
+
+
+            yield return AOTHotUpdateManager.Instance.PatchMetaData(isSimulated);
+            yield return AOTHotUpdateManager.Instance.LoadHotUpdateAssemblies(isSimulated);
         }
         #endregion
 

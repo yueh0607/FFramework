@@ -34,11 +34,15 @@ namespace FFramework.MicroAOT
 
         static string GetItem(string name)
         {
-            var node = Root[nameof(GameLogicPackageName)];
+            var node = Root[name];
             if (node == null)
                 throw new System.InvalidOperationException($"StartInfo/Root/{name} is not existed");
             return node.InnerText;
         }
+         
+        //************************************
+        //此处的改名需要连带StartInfo配置文件的对应项一起修改
+        //**********************************
 
         public static string GameLogicPackageName => GetItem(nameof(GameLogicPackageName));
 
@@ -51,5 +55,7 @@ namespace FFramework.MicroAOT
         public static string HotUpdateEntryClass => GetItem(nameof(HotUpdateEntryClass));
 
         public static string HotUpdateEntryMethod => GetItem(nameof(HotUpdateEntryMethod));
+
+        public static string AOTAssetTag => GetItem(nameof(AOTAssetTag));
     }
 }

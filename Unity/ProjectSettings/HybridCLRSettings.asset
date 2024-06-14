@@ -20,6 +20,7 @@ MonoBehaviour:
   - {fileID: 5897886265953266890, guid: eaaf0d6d4e679924f829206fc4e3d4ec, type: 3}
   - {fileID: 5897886265953266890, guid: b4e6504b29460f540a5b71dd0f57bf4d, type: 3}
   - {fileID: 5897886265953266890, guid: 0235e1674d6d7ec43921587db2f76c0b, type: 3}
+  - {fileID: 5897886265953266890, guid: aa96906cb4ca4ff41a0d2bce075c67f9, type: 3}
   hotUpdateAssemblies:
   - Assembly-CSharp
   preserveHotUpdateAssemblies: []
@@ -31,6 +32,6 @@ MonoBehaviour:
   patchAOTAssemblies:
   - FFramework.AOT
   outputLinkFile: Scripts/Link/link.xml
-  outputAOTGenericReferenceFile: FFramework/FFramework.Editor/HotFixCopyTool/HybridCLRGenerate/AOTGenericReferences.cs
+  outputAOTGenericReferenceFile: FFramework/FFramework.Editor/FFramework.UnityEditor/HotFixCopyTool/HybridCLRGenerate/AOTGenericReferences.cs
   maxGenericReferenceIteration: 10
   maxMethodBridgeGenericIteration: 10

@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using YooAsset;
 
@@ -13,51 +15,85 @@ namespace FFramework.MicroAOT
         /// </summary>
         /// <returns></returns>
 
-        public IEnumerator PatchMetaData()
+        public IEnumerator PatchMetaData(bool isSimulated)
         {
-            var infos = AOTResourceManager.Instance.LoadAllAssetByTag(AOTStartInfoManager.PatchMetaDataDllTag);
-
-            List<RawFileHandle> handles = new List<RawFileHandle>();
-            foreach (var assetInfo in infos)
+            if (!isSimulated)
             {
-                handles.Add(AOTResourceManager.Instance.LoadRawFileAsync(assetInfo));
+                var infos = AOTResourceManager.Instance.GameLogicPackage.GetAssetInfos(AOTStartInfoManager.PatchMetaDataDllTag);
+
+                List<RawFileHandle> handles = new List<RawFileHandle>();
+                foreach (var assetInfo in infos)
+                {
+                    handles.Add(AOTResourceManager.Instance.GameLogicPackage.LoadRawFileAsync(assetInfo));
+                }
+
+                foreach (var handle in handles)
+                {
+                    yield return handle;
+                    HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(handle.GetRawFileData(), HybridCLR.HomologousImageMode.SuperSet);
+                }
+            }
+            else
+            {
+                //do nothing
             }
 
-            foreach (var handle in handles)
-            {
-                yield return handle;
-                HybridCLR.RuntimeApi.LoadMetadataForAOTAssembly(handle.GetRawFileData(), HybridCLR.HomologousImageMode.SuperSet);
-            }
         }
 
         /// <summary>
         /// 加载热更程序集，调用每个程序集内的入口函数
         /// </summary>
         /// <returns></returns>
-        public IEnumerator LoadHotUpdateAssemblies()
+        public IEnumerator LoadHotUpdateAssemblies(bool isSimulated)
         {
-            var infos = AOTResourceManager.Instance.LoadAllAssetByTag(AOTStartInfoManager.HotUpdateDllTag);
 
-            List<RawFileHandle> handles = new List<RawFileHandle>();
-
-            foreach (var assetInfo in infos)
+            void InvokeEntry(Assembly ass)
             {
-                handles.Add(AOTResourceManager.Instance.LoadRawFileAsync(assetInfo));
-            }
-            Assembly[] hotUpdateAssemblies = new Assembly[handles.Count];
-            foreach (var handle in handles)
-            {
-                yield return handle;
-            }
-
-
-            for (int i = 0; i < hotUpdateAssemblies.Length; i++)
-            {
-                var entryType = hotUpdateAssemblies[i].GetType(AOTStartInfoManager.HotUpdateEntryClass, false);
-                if (entryType == null) continue;
+                var entryType = ass.GetType(AOTStartInfoManager.HotUpdateEntryClass, false);
+                if (entryType == null) return;
                 var method = entryType.GetMethod(AOTStartInfoManager.HotUpdateEntryMethod, BindingFlags.Static | BindingFlags.Public);
-                if (method == null) continue;
+                if (method == null) return;
                 _ = method.Invoke(null, null);
+            }
+
+            if (!isSimulated)
+            {
+                var infos = AOTResourceManager.Instance.GameLogicPackage.GetAssetInfos(AOTStartInfoManager.HotUpdateDllTag);
+
+                List<RawFileHandle> handles = new List<RawFileHandle>();
+
+                foreach (var assetInfo in infos)
+                {
+                    handles.Add(AOTResourceManager.Instance.GameLogicPackage.LoadRawFileAsync(assetInfo));
+                }
+                Assembly[] hotUpdateAssemblies = new Assembly[handles.Count];
+                foreach (var handle in handles)
+                {
+                    yield return handle;
+                }
+
+
+                for (int i = 0; i < hotUpdateAssemblies.Length; i++)
+                {
+                    hotUpdateAssemblies[i] = Assembly.Load(handles[i].GetRawFileData());
+
+                    InvokeEntry(hotUpdateAssemblies[i]);
+                }
+            }
+            else
+            {
+
+                var method = (Assembly.Load("FFramework.UnityEditor")?.GetType("FFramework.HotFix.Editor.HotFixTool", true)
+                    ?.GetMethod("GetHotUpdateAssemblyNames", BindingFlags.Static | BindingFlags.Public)) ?? throw new InvalidProgramException("FFramework cannot find a method to get hot update assemblies name");
+                List<string> result = (List<string>)method.Invoke(null, null);
+
+                List<Assembly> assemblies = AppDomain.CurrentDomain.GetAssemblies()
+                    .Where((x) => result.Contains(x.GetName().Name))
+                    .ToList();
+
+                foreach (var ass in assemblies)
+                    InvokeEntry(ass);
+
             }
         }
 

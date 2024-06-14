@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using YooAsset;
 
 namespace FFramework.MicroAOT
@@ -13,6 +14,9 @@ namespace FFramework.MicroAOT
 
         private ResourcePackage m_GameLogicPackage;
         private ResourcePackage m_GameResourcePackage;
+
+        public ResourcePackage GameLogicPackage => m_GameLogicPackage;
+        public ResourcePackage GameResourcePackage => m_GameLogicPackage;
 
         private PackageVersionProxy m_Versions;
 
@@ -32,6 +36,41 @@ namespace FFramework.MicroAOT
             public string GameLogicPackageVersion { get; internal set; }
         }
 
+
+
+        class RemoteService : IRemoteServices
+        {
+            string m_DefaultCDN;
+            string m_FallbackCDN;
+
+            public RemoteService(string defaultCDN, string fallbackCDN)
+            {
+                this.m_DefaultCDN = defaultCDN;
+                this.m_FallbackCDN = fallbackCDN;
+            }
+
+            public string GetRemoteFallbackURL(string fileName)
+            {
+                return m_DefaultCDN;
+            }
+
+            public string GetRemoteMainURL(string fileName)
+            {
+                return m_FallbackCDN;
+            }
+        }
+
+
+        public class GameQueryServices : IBuildinQueryServices
+        {
+            public bool Query(string packageName, string fileName, string fileCRC)
+            {
+                // 注意：fileName包含文件格式
+                return StreamingAssetQueryHelper.FileExists(packageName, fileName, fileCRC);
+            }
+        }
+
+
         /// <summary>
         /// (All)第一步：初始化资源模块
         /// </summary>
@@ -44,35 +83,6 @@ namespace FFramework.MicroAOT
 
             this.m_InitParams = initParams;
 
-            InitializeParameters yooParams = null;
-            if (m_InitParams is AOTResourceInitParameters.Simulated simulateParam)
-            {
-                EditorSimulateModeParameters simulateModeParameters = new EditorSimulateModeParameters();
-                simulateModeParameters.SimulateManifestFilePath = simulateParam.SimulateBuild();
-                simulateModeParameters.DecryptionServices = simulateParam.DecryptionServices;
-                yooParams = simulateModeParameters;
-            }
-            else if (m_InitParams is AOTResourceInitParameters.Offline offlineParam)
-            {
-                OfflinePlayModeParameters offlinePlayModeParameters = new OfflinePlayModeParameters();
-                offlinePlayModeParameters.DecryptionServices = offlineParam.DecryptionServices;
-                yooParams = offlinePlayModeParameters;
-            }
-            else if (m_InitParams is AOTResourceInitParameters.Host hostParam)
-            {
-                HostPlayModeParameters hostPlayModeParameters = new HostPlayModeParameters();
-                hostPlayModeParameters.BuildinQueryServices = hostParam.BuildinQueryServices;
-                hostPlayModeParameters.DecryptionServices = hostParam.DecryptionServices;
-                yooParams = hostPlayModeParameters;
-            }
-            else if (m_InitParams is AOTResourceInitParameters.WebGL webglParam)
-            {
-                WebPlayModeParameters webPlayModeParameters = new WebPlayModeParameters();
-                webPlayModeParameters.DecryptionServices = null;
-                webPlayModeParameters.BuildinQueryServices = webglParam.BuildinQueryServices;
-                webPlayModeParameters.RemoteServices = webglParam.RemoteServices;
-                yooParams = webPlayModeParameters;
-            }
 
             // 初始化资源系统
             if (!YooAssets.Initialized)
@@ -87,12 +97,50 @@ namespace FFramework.MicroAOT
 
             YooAssets.SetDefaultPackage(m_GameResourcePackage);
 
-            IEnumerator InitPackage(ResourcePackage package, InitializeParameters param, AOTResourceInitParameters moduleParameter)
+            IEnumerator InitPackage(ResourcePackage package, AOTResourceInitParameters moduleParameter, EDefaultBuildPipeline pipeline)
             {
                 //初始化成功，不需要等待
                 if (package.InitializeStatus == EOperationStatus.Succeed) yield break;
 
-                InitializationOperation operation = package.InitializeAsync(param);
+
+                InitializeParameters yooParams = null;
+                if (m_InitParams is AOTResourceInitParameters.Simulated simulateParam)
+                {
+                    EditorSimulateModeParameters simulateModeParameters = new EditorSimulateModeParameters();
+                    simulateModeParameters.SimulateManifestFilePath = EditorSimulateModeHelper.SimulateBuild(pipeline, package.PackageName);
+                    simulateModeParameters.DecryptionServices = simulateParam.DecryptionServices;
+                    yooParams = simulateModeParameters;
+                }
+                else if (m_InitParams is AOTResourceInitParameters.Offline offlineParam)
+                {
+                    OfflinePlayModeParameters offlinePlayModeParameters = new OfflinePlayModeParameters();
+                    offlinePlayModeParameters.DecryptionServices = offlineParam.DecryptionServices;
+                    yooParams = offlinePlayModeParameters;
+                }
+                else if (m_InitParams is AOTResourceInitParameters.Host hostParam)
+                {
+                    HostPlayModeParameters hostPlayModeParameters = new HostPlayModeParameters();
+                    hostPlayModeParameters.BuildinQueryServices = hostParam.BuildinQueryServices;
+                    hostPlayModeParameters.DecryptionServices = hostParam.DecryptionServices;
+                    hostPlayModeParameters.BuildinQueryServices = hostParam.BuildinQueryServices;
+                    hostPlayModeParameters.RemoteServices = new RemoteService(hostParam.DefaultHostServer, hostParam.FallbackHostServer);
+                    hostPlayModeParameters.BreakpointResumeFileSize = 1024 * 1024 * 10;
+                    yooParams = hostPlayModeParameters;
+                }
+                else if (m_InitParams is AOTResourceInitParameters.WebGL webglParam)
+                {
+                    WebPlayModeParameters webPlayModeParameters = new WebPlayModeParameters();
+                    webPlayModeParameters.DecryptionServices = null;
+                    webPlayModeParameters.BuildinQueryServices = webglParam.BuildinQueryServices;
+                    webPlayModeParameters.RemoteServices = new RemoteService(webglParam.DefaultHostServer, webglParam.FallbackHostServer);
+                    webPlayModeParameters.BuildinQueryServices = webglParam.BuildinQueryServices;
+                    webPlayModeParameters.BreakpointResumeFileSize = 1024 * 1024 * 10;
+                    yooParams = webPlayModeParameters;
+                }
+
+
+
+                InitializationOperation operation = package.InitializeAsync(yooParams);
                 while (!operation.IsDone)
                 {
                     moduleParameter.InitCallback?.Invoke(package, operation);
@@ -101,9 +149,9 @@ namespace FFramework.MicroAOT
             }
 
             //初始化资源包
-            yield return InitPackage(m_GameLogicPackage, yooParams, m_InitParams);
+            yield return InitPackage(m_GameLogicPackage, m_InitParams, EDefaultBuildPipeline.RawFileBuildPipeline);
 
-            yield return InitPackage(m_GameResourcePackage, yooParams, m_InitParams);
+            yield return InitPackage(m_GameResourcePackage, m_InitParams, EDefaultBuildPipeline.BuiltinBuildPipeline);
 
         }
 
@@ -188,50 +236,7 @@ namespace FFramework.MicroAOT
             yield return DownloadPackageResource(m_GameResourcePackage, m_InitParams);
         }
 
-
-        public AssetHandle LoadAssetAsync<T>(string location) where T : UnityEngine.Object
-        {
-            return YooAssets.LoadAssetAsync<T>(location);
-        }
-        public AssetHandle LoadAssetAsync<T>(AssetInfo location) where T : UnityEngine.Object
-        {
-            return YooAssets.LoadAssetAsync(location);
-        }
-
-        public RawFileHandle LoadRawFileAsync(string location)
-        {
-            return YooAssets.LoadRawFileAsync(location);
-        }
-
-        public RawFileHandle LoadRawFileAsync(AssetInfo location)
-        {
-            return YooAssets.LoadRawFileAsync(location);
-        }
-
-        public SubAssetsHandle LoadSubAssetAsync(string location)
-        {
-            return YooAssets.LoadSubAssetsAsync(location);
-        }
-
-        public SubAssetsHandle LoadSubAssetAsync(AssetInfo location)
-        {
-            return YooAssets.LoadSubAssetsAsync(location);
-        }
-
-
-        public SceneHandle LoadSceneAsync(string location)
-        {
-            return YooAssets.LoadSceneAsync(location);
-        }
-        public SceneHandle LoadSceneAsync(AssetInfo location)
-        {
-            return YooAssets.LoadSceneAsync(location);
-        }
-
-        public AssetInfo[] LoadAllAssetByTag(string tag)
-        {
-            return YooAssets.GetAssetInfos(tag);
-        }
-
     }
+
+
 }

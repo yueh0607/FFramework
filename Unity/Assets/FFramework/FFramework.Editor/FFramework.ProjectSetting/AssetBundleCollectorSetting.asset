@@ -20,7 +20,7 @@ MonoBehaviour:
     PackageDesc: "\u6E38\u620F\u8D44\u6E90\u5305"
     EnableAddressable: 1
     LocationToLower: 0
-    IncludeAssetGUID: 0
+    IncludeAssetGUID: 1
     AutoCollectShaders: 1
     IgnoreRuleName: NormalIgnoreRule
     Groups:
@@ -37,11 +37,16 @@ MonoBehaviour:
         FilterRuleName: CollectPrefab
         AssetTags: 
         UserData: 
+    - GroupName: AOT
+      GroupDesc: "AOT\u5206\u7EC4\uFF0C\u53D1\u5E03\u540E\u4E0D\u53EF\u53D8\u66F4"
+      AssetTags: AOT
+      ActiveRuleName: EnableGroup
+      Collectors: []
   - PackageName: GameLogic
     PackageDesc: "\u6E38\u620F\u903B\u8F91\u5305"
     EnableAddressable: 0
     LocationToLower: 0
-    IncludeAssetGUID: 0
+    IncludeAssetGUID: 1
     AutoCollectShaders: 1
     IgnoreRuleName: NormalIgnoreRule
     Groups:

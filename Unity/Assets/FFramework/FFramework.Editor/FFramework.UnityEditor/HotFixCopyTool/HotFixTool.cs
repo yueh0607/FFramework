@@ -94,6 +94,14 @@ namespace FFramework.HotFix.Editor
             LoadMetaDataAssemblyNames();
         }
 
+        //留用
+        public static List<string> GetHotUpdateAssemblyNames()
+        {
+            LoadHotUpdateAssemblyNames();
+            return HotUpdateAssemblyNames;
+        }
+
+
         static void LoadHotUpdateAssemblyNames()
         {
             HotUpdateAssemblyNames.Clear();
