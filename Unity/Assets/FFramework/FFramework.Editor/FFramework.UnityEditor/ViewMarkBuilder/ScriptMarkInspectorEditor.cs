@@ -83,6 +83,15 @@ namespace FFramework.ViewMark.Editor
                 viewTypesString = viewTypes
                     .Select((x) => x.GetDisplayName())
                     .ToArray();
+
+                Type viewBaseType = Type.GetType(this.viewBaseType.stringValue);
+                if (viewBaseType != null)
+                {
+                    viewBaseTypeIndex = viewTypesString.ToList().IndexOf(viewBaseType.GetDisplayName());
+                    if (viewBaseTypeIndex < 0) viewBaseTypeIndex = 0;
+                }
+                else viewBaseTypeIndex = 0;
+
             }
 
 
@@ -119,7 +128,6 @@ namespace FFramework.ViewMark.Editor
 
 
         int propertyMask = 0;
-        int viewModelBaseTypeIndex = 0;
         int viewBaseTypeIndex = 0;
 
 
@@ -295,7 +303,7 @@ namespace FFramework.ViewMark.Editor
 
             viewBaseTypeIndex = EditorGUILayout.Popup("Base", viewBaseTypeIndex, viewTypesString);
             viewBaseType.stringValue = viewTypes.ElementAt(viewBaseTypeIndex).AssemblyQualifiedName;
-            int x = EditorGUILayout.Popup(0, namepsaces.ToArray());
+            int x = EditorGUILayout.Popup(namepsaces.IndexOf(viewNameSpace.stringValue), namepsaces.ToArray());
             viewNameSpace.stringValue = namepsaces[x];
 
             viewDescription.stringValue = EditorGUILayout.TextArea(viewDescription.stringValue, GUILayout.Height(100));
