@@ -52,6 +52,7 @@ namespace FFramework
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
             //指定下一步的行为
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
+            fTaskAwaiter.SetStarted();
 
             //有令牌，且有取消请求
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
@@ -126,7 +127,7 @@ namespace FFramework
             fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
-
+            fTaskAwaiter.SetStarted();
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
                 fTaskAwaiter.SetCanceled();

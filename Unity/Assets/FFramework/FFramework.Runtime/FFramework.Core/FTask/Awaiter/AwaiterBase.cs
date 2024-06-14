@@ -49,15 +49,20 @@ namespace FFramework
 
         protected AwaiterBase() { }
 
+        public void SetStarted()
+        {
+            BindTask.Flow?.OnStart();
+        }
+
         void INotifyCompletion.OnCompleted(System.Action continuation)
         {
             this.m_ContinuationOrExceptionDispatchInfo = continuation;
-            BindTask.Flow?.OnStart();
+          
         }
         void ICriticalNotifyCompletion.UnsafeOnCompleted(System.Action continuation)
         {
             this.m_ContinuationOrExceptionDispatchInfo = continuation;
-            BindTask.Flow?.OnStart();
+        
         }
 
 

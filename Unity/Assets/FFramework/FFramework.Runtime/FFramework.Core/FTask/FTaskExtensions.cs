@@ -239,6 +239,7 @@ namespace FFramework
             promise.InvokeTask = task;
             promise.BindTask = fTask.GetAwaiter();
             promise.BindToken = tokenSource;
+            promise.ExceptionCallback = fTask.GetAwaiter();
             fTask.m_TaskFlow = promise;
             return fTask;
         }
