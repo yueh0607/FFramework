@@ -6,37 +6,25 @@ using UnityEngine;
 public static class HotUpdateEntry
 {
 
+    static async FTask Test()
+    {
+        
+        await FTask.DelaySeconds(3);
+        Debug.Log("1");
+        await FTask.DelaySeconds(3);
+        Debug.Log("2");
+    }
+
+    static FCancellationToken token = new FCancellationToken();
 
     [EntryPriority(0)]
     public static void Main()
     {
+        Test().Forget(token);
 
-        Test().Forget();
+        token.CancelAfterSeconds(4);
+        
     }
 
-    static async FTask Test()
-    {
-        await Test2();
-    }
-
-    static async FTask Test2()
-    {
-
-        //try
-        //{
-            await Task.Run(() =>
-            {
-                throw new System.Exception("TestEx");
-            }).ToFTask();
-
-        //}
-        //catch
-        //{
-        //    Debug.LogError("Catched");
-        //}
-
-        await FTask.DelaySeconds(3);
-        Debug.Log("3秒后");
-    }
 }
 

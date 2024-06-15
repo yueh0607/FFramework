@@ -77,7 +77,7 @@
 
         void IFTaskFlow.OnCancel()
         {
-            BindTask.SetSucceed();
+            //BindTask.SetSucceed();
             Envirment.Current.GetModule<PoolModule>().Set<WaitCountPromise, WaitCountPromise.Poolable>(this);
         }
 
