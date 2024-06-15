@@ -13,8 +13,6 @@ namespace FFramework
             get => m_CurrentAwaiter;
             set => m_CurrentAwaiter = value;
         }
-
-
         public void SetSyncSucceed()
         {
             IFTaskAwaiter curAwaiter = this;
@@ -28,7 +26,6 @@ namespace FFramework
                 syncAwaiter.SetSucceed();
             }
         }
-
 
         public bool IsCompleted { get; private set; } = false;
 
@@ -75,7 +72,7 @@ namespace FFramework
 
             if (m_TokenHolder != null)
             {
-                m_TokenHolder.Flow = BindTask.Flow;
+                m_TokenHolder.Awaiter = this;
             }
 
             if (CurrentAwaiter != null)
@@ -92,10 +89,9 @@ namespace FFramework
             m_ExceoptionInfo = exceptionDispatchInfo;
             m_Status = FTaskStatus.Failed;
             BindTask.Flow?.OnFailed();
-         
-            BindTask.Flow?.OnSucceed();
-            m_Continuation?.Invoke();
-
+            if (m_Continuation == null) m_Continuation.Invoke();
+            else m_ExceoptionInfo?.Throw();
+            //会在GetResult后回收
             Recycle(BindTask);
 
         }
@@ -108,10 +104,12 @@ namespace FFramework
             m_Status = FTaskStatus.Canceled;
 
             //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
-            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
-                BindTask.Flow.OnCancel();
+            //if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+            BindTask.Flow?.OnCancel();
 
-            ((System.Action)m_Continuation)?.Invoke();
+            //m_ExceoptionInfo = ExceptionDispatchInfo.Capture(new System.OperationCanceledException());
+
+            m_Continuation?.Invoke();
             Recycle(BindTask);
         }
 
@@ -120,8 +118,8 @@ namespace FFramework
             if (m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
             //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
-            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
-                BindTask.Flow.OnSuspend();
+            //if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+            BindTask.Flow?.OnSuspend();
 
             m_Status = FTaskStatus.Suspending;
         }
@@ -131,8 +129,8 @@ namespace FFramework
             if (m_Status.IsFinished())
                 throw new System.InvalidOperationException(FTaskConst.FTASK_ALREADY_FINISHED_MESSAGE);
             //只有Flow不是当前的令牌持有的,不是空，才能被调用，否则交给令牌调用
-            if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
-                BindTask.Flow.OnRestore();
+            //if (TokenHolder != null && TokenHolder.Flow != BindTask.Flow && BindTask.Flow != null)
+            BindTask.Flow?.OnRestore();
 
             m_Status = FTaskStatus.Pending;
         }
@@ -145,8 +143,8 @@ namespace FFramework
             m_Continuation = null;
             m_ExceoptionInfo = null;
 
-            if (TokenHolder != null && TokenHolder.Flow == BindTask.Flow)
-                TokenHolder.Flow = null;
+            if (TokenHolder != null && TokenHolder.Awaiter == this)
+                TokenHolder.Awaiter = null;
             m_TokenHolder = null;
 
         }
@@ -156,7 +154,9 @@ namespace FFramework
 
         protected void OnGetResult()
         {
+            if (m_ExceoptionInfo != null) UnityEngine.Debug.LogError(m_ExceoptionInfo.SourceException.Message);
             m_ExceoptionInfo?.Throw();
+
         }
 
     }

@@ -9,6 +9,7 @@ namespace FFramework
 
         private bool m_NotFirstAwait;
 
+
         public static FTaskAsyncMethodBuilder Create()
         {
             return new FTaskAsyncMethodBuilder() { m_FTask = Envirment.Current.GetModule<PoolModule>().Get<FTask, FTask.Poolable>() };
@@ -21,7 +22,6 @@ namespace FFramework
 
         public readonly void SetStateMachine(IAsyncStateMachine stateMachine)
         {
-            // do nothing
         }
 
         public readonly void SetResult()
@@ -45,14 +45,14 @@ namespace FFramework
             IFTaskAwaiter fTaskAwaiter = (IFTaskAwaiter)awaiter;
 
             //TODO:如果传入的有令牌，则不能成功覆盖令牌，阻断令牌传递流
-            if (fTaskAwaiter.TokenHolder == null)              
+            if (fTaskAwaiter.TokenHolder == null)
                 fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
 
             //设置当前状态机所等待的的Awaiter
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
             //指定下一步的行为
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
-            fTaskAwaiter.SetStarted();
+
 
             //有令牌，且有取消请求
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
@@ -63,11 +63,12 @@ namespace FFramework
             else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
             {
                 fTaskAwaiter.SetSuspend();
-                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
+                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(fTaskAwaiter.SetStarted, fTaskAwaiter.SetRestore);
             }
             //无令牌或处于响应状态
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
+                fTaskAwaiter.SetStarted();
                 //TODO：根据CurrentAwaiter链进行查找，找到最深的任务，如果是同步任务则完成
                 if (m_NotFirstAwait)
                 {
@@ -127,7 +128,7 @@ namespace FFramework
             fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
-            fTaskAwaiter.SetStarted();
+
             if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsCancellationRequested)
             {
                 fTaskAwaiter.SetCanceled();
@@ -135,10 +136,11 @@ namespace FFramework
             else if (fTaskAwaiter.TokenHolder != null && fTaskAwaiter.TokenHolder.IsSuspendRequested)
             {
                 fTaskAwaiter.SetSuspend();
-                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(stateMachine.MoveNext, fTaskAwaiter.SetRestore);
+                fTaskAwaiter.TokenHolder.InternalRegisterSuspendCallback(fTaskAwaiter.SetStarted, fTaskAwaiter.SetRestore);
             }
             else if (fTaskAwaiter.Status == FTaskStatus.Pending)
             {
+                fTaskAwaiter.SetStarted();
                 if (m_NotFirstAwait)
                 {
                     fTaskAwaiter.SetSyncSucceed();

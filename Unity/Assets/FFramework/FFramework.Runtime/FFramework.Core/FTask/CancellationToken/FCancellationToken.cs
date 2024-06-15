@@ -15,7 +15,7 @@ namespace FFramework
         private System.Action m_CancelCallback;
 
         private System.Action m_SuspendCallback;
-        internal IFTaskFlow Flow { get; set; }
+        internal IFTaskAwaiter Awaiter;
 
 
         public bool IsCancellationRequested => m_IsCancellationRequested;
@@ -29,29 +29,32 @@ namespace FFramework
             m_CancelCallback += callback;
         }
 
-        internal void InternalRegisterSuspendCallback(System.Action callback, System.Action restoreCallback)
+        internal void InternalRegisterSuspendCallback(params System.Action[] restoreCallback)
         {
-            m_SuspendCallback += restoreCallback;
-            m_SuspendCallback += callback;
+            foreach(var callback in restoreCallback)
+            {
+                m_SuspendCallback += callback;
+            }
+
         }
 
         internal void InternalCancel()
         {
             m_IsCancellationRequested = true;
-            Flow?.OnCancel();
+            Awaiter?.SetCanceled();
             m_CancelCallback?.Invoke();
         }
 
         internal void InternalSuspend()
         {
             m_IsSuspendRequested = true;
-            Flow?.OnSuspend();
+            Awaiter?.SetSuspend();
         }
 
         internal void InternalRestore()
         {
             m_IsSuspendRequested = false;
-            Flow?.OnRestore();
+            Awaiter?.SetRestore();
             m_SuspendCallback?.Invoke();
         }
 
@@ -162,7 +165,7 @@ namespace FFramework
 
             void IPoolable<FCancellationToken>.OnSet(FCancellationToken obj)
             {
-                obj.Flow = null;
+                obj.Awaiter = null;
                 obj.m_IsCancellationRequested = false;
                 obj.m_IsSuspendRequested = false;
                 obj.m_SuspendCallback = null;

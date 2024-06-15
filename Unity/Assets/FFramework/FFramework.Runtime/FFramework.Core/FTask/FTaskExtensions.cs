@@ -238,7 +238,7 @@ namespace FFramework
             FTask fTask = Envirment.Current.GetModule<PoolModule>().Get<FTask, FTask.Poolable>();
             promise.InvokeTask = task;
             promise.BindTask = fTask.GetAwaiter();
-            promise.BindToken = tokenSource;
+            //promise.BindToken = tokenSource ?? new CancellationTokenSource();
             promise.ExceptionCallback = fTask.GetAwaiter();
             fTask.m_TaskFlow = promise;
             return fTask;
@@ -256,7 +256,7 @@ namespace FFramework
             FTask<TResult> fTask = Envirment.Current.GetModule<PoolModule>().Get<FTask<TResult>, FTask<TResult>.Poolable>();
             promise.InvokeTask = task;
             promise.BindTask = fTask.GetAwaiter();
-            promise.BindToken = tokenSource;
+            promise.BindToken = tokenSource ?? new CancellationTokenSource();
             fTask.m_TaskFlow = promise;
             return fTask;
         }
