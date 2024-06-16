@@ -12,10 +12,15 @@ public static class HotUpdateEntry
     [EntryPriority(int.MaxValue)]
     public static void Main()
     {
+        Env = new UnityEnvirment();
+        FLoger.SetLogger(new FUnityLogger());
+
         m_FrameworkRoot = new GameObject("[FFramework]");
         GameObject.DontDestroyOnLoad(m_FrameworkRoot);
-        Env = new UnityEnvirment();
+       
         m_FrameworkRoot.AddComponent<UnityDriver>();
+
+        FLoger.LogError("测试");
     }
 
 }

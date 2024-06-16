@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 
 namespace FFramework
@@ -15,6 +16,7 @@ namespace FFramework
         private System.Action m_CancelCallback;
 
         private System.Action m_SuspendCallback;
+
         internal IFTaskAwaiter Awaiter;
 
 
@@ -22,7 +24,9 @@ namespace FFramework
 
         public bool IsSuspendRequested => m_IsSuspendRequested;
 
+        private List<FCancellationToken> m_LinkFromTokens = new List<FCancellationToken>();
 
+        private List<FCancellationToken> m_LinksToTokens = new List<FCancellationToken>();
 
         internal void InternalRegisterCancelCallback(System.Action callback)
         {
@@ -31,7 +35,7 @@ namespace FFramework
 
         internal void InternalRegisterSuspendCallback(params System.Action[] restoreCallback)
         {
-            foreach(var callback in restoreCallback)
+            foreach (var callback in restoreCallback)
             {
                 m_SuspendCallback += callback;
             }
@@ -139,6 +143,23 @@ namespace FFramework
             => InternalRegisterCancelCallback(callback);
 
 
+        public void LinkTo(FCancellationToken token)
+        {
+            for (int i = 0; i < token.m_LinkFromTokens.Count; i++)
+            {
+                if (token.m_LinkFromTokens[i].ID == this.ID) return;
+            }
+            token.m_LinkFromTokens.Add(token);
+            m_LinksToTokens.Add(token);
+        }
+
+        public void DelinkTo(FCancellationToken token)
+        {
+            token.m_LinkFromTokens.Remove(this);
+            m_LinksToTokens.Remove(token);
+        }
+
+
         public static implicit operator bool(FCancellationToken token)
         {
             return token != null && token.IsCancellationRequested;
@@ -162,13 +183,29 @@ namespace FFramework
             {
 
             }
-
+             
             void IPoolable<FCancellationToken>.OnSet(FCancellationToken obj)
             {
                 obj.Awaiter = null;
                 obj.m_IsCancellationRequested = false;
                 obj.m_IsSuspendRequested = false;
                 obj.m_SuspendCallback = null;
+                //谁连接到了当前令牌
+                foreach(var token in obj.m_LinkFromTokens)
+                {
+                    //那个令牌连接到了谁
+                    token.m_LinksToTokens.Remove(obj);
+                }
+                //没人连接到当前令牌
+                obj.m_LinkFromTokens.Clear();
+                //当前令牌连接到了谁
+                foreach(var token in obj.m_LinksToTokens)
+                {
+                    //我没有连接到任何人
+                    token.m_LinkFromTokens.Remove(obj);
+                }
+                //我没有连接到任何人
+                obj.m_LinksToTokens.Clear();
             }
         }
     }

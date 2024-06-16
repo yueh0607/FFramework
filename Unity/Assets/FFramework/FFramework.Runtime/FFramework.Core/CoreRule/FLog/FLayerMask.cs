@@ -5,15 +5,12 @@ namespace FFramework
     /// <summary>
     /// 支持最多0-63层的开闭
     /// </summary>
-#pragma warning disable CS0660 // 类型定义运算符 == 或运算符 !=，但不重写 Object.Equals(object o)
-#pragma warning disable CS0661 // 类型定义运算符 == 或运算符 !=，但不重写 Object.GetHashCode()
     public struct FLayerMask
-#pragma warning restore CS0661 // 类型定义运算符 == 或运算符 !=，但不重写 Object.GetHashCode()
-#pragma warning restore CS0660 // 类型定义运算符 == 或运算符 !=，但不重写 Object.Equals(object o)
+
     {
         private long m_LayerMask;
 
-        private FLayerMask(long layerMask)
+        public FLayerMask(long layerMask)
         {
             m_LayerMask = layerMask;
         }
@@ -30,6 +27,18 @@ namespace FFramework
             return new FLayerMask(mask.m_LayerMask & ~(1L << layer));
         }
 
+        // Check if a specific layer is open (bit is set)
+        public bool IsLayerOpen(int layer)
+        {
+            return (m_LayerMask & (1L << layer)) != 0;
+        }
+
+        // Check if a specific layer is closed (bit is clear)
+        public bool IsLayerClosed(int layer)
+        {
+            return (m_LayerMask & (1L << layer)) == 0;
+        }
+
         // 是否打开了N层
         public static bool operator ==(FLayerMask mask, int layer)
         {
@@ -42,14 +51,48 @@ namespace FFramework
             return (mask.m_LayerMask & (1L << layer)) == 0;
         }
 
+   
+        // Check equality between two FLayerMask objects
         public static bool operator ==(FLayerMask left, FLayerMask right)
         {
-            return left.Equals(right);
+            if (ReferenceEquals(left, right)) return true;
+            if (ReferenceEquals(left, null) || ReferenceEquals(right, null)) return false;
+            return left.m_LayerMask == right.m_LayerMask;
         }
 
+        // Check inequality between two FLayerMask objects
         public static bool operator !=(FLayerMask left, FLayerMask right)
         {
             return !(left == right);
+        }
+
+        // Override Equals method
+        public override bool Equals(object obj)
+        {
+            if (obj is FLayerMask mask)
+            {
+                return m_LayerMask == mask.m_LayerMask;
+            }
+            return false;
+        }
+
+        // Override GetHashCode method
+        public override int GetHashCode()
+        {
+            return m_LayerMask.GetHashCode();
+        }
+
+        public const long AllOpenedValue =~0L;
+        public const long AllClosedValue = 0L;
+
+        public void CloseAll()
+        {
+            m_LayerMask = AllClosedValue;
+        }
+
+        public void OpenAll()
+        {
+            m_LayerMask = AllOpenedValue;
         }
     }
 }

@@ -47,6 +47,7 @@ namespace FFramework
             //TODO:如果传入的有令牌，则不能成功覆盖令牌，阻断令牌传递流
             if (fTaskAwaiter.TokenHolder == null)
                 fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
+            else fTaskAwaiter.TokenHolder.LinkTo(m_FTask.GetAwaiter().TokenHolder);
 
             //设置当前状态机所等待的的Awaiter
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
@@ -125,7 +126,12 @@ namespace FFramework
             IFTaskAwaiter fTaskAwaiter = (IFTaskAwaiter)awaiter;
 
             //TODO:释放旧Token,设置新Token
-            fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
+            //TODO:如果传入的有令牌，则不能成功覆盖令牌，阻断令牌传递流
+            if (fTaskAwaiter.TokenHolder == null)
+                fTaskAwaiter.SetToken(m_FTask.GetAwaiter().TokenHolder);
+            else fTaskAwaiter.TokenHolder.LinkTo(m_FTask.GetAwaiter().TokenHolder);
+
+
             m_FTask.GetAwaiter().CurrentAwaiter = fTaskAwaiter;
             fTaskAwaiter.OnCompleted(stateMachine.MoveNext);
 

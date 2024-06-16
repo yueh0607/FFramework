@@ -1,4 +1,6 @@
-﻿namespace FFramework
+﻿using System;
+
+namespace FFramework
 {
 
 
@@ -8,5 +10,9 @@
 
         string GetLogPath();
 
+        string CreateFormatFileWrite(ELogLevel lev, object message)
+        {
+            return $"[{lev} {DateTime.Now}] {message}";
+        }
     }
 }
