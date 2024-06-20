@@ -4,7 +4,8 @@
     {
 
     }
-    public abstract class ViewModuleBase 
+    [ModuleVague]
+    public abstract class ViewModule  : IModule
     {
 
         public async FTask<T> LoadView<T>(string viewPath) where T : class, IView
@@ -44,5 +45,15 @@
         /// </summary>
         /// <param name="view"></param>
         protected abstract void OnUnloadViewAsset(IView view);
+
+        void IModule.OnCreate(object moduleParameter)
+        {
+            
+        }
+
+        void IModule.OnDestroy()
+        {
+            
+        }
     }
 }

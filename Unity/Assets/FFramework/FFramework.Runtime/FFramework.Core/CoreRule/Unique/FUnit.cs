@@ -4,7 +4,8 @@ namespace FFramework
 {
     public abstract class FUnit
     {
-        private static readonly Lazy<UniqueID> m_UniqueID = new Lazy<UniqueID>();
+        //将0和以前的ID作为保留ID
+        private static readonly Lazy<UniqueID> m_UniqueID = new Lazy<UniqueID>(()=>new UniqueID(1));
 
         private long m_ID;
 

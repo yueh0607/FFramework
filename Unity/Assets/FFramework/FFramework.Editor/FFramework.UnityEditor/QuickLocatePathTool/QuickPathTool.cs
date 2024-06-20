@@ -50,6 +50,7 @@ namespace FFramework.QuickPath.Editor
             OpenURL(Application.temporaryCachePath);
         }
 
+
         static void OpenURL(string path)
         {
             Application.OpenURL(path);

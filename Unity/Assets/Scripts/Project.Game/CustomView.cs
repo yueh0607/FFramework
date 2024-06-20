@@ -4,7 +4,7 @@ namespace Game.Views
 {
     [ViewNamespace]
     [ViewBase]
-    public class CustomView : View
+    public class CustomView : ViewBase
     {
 
     }

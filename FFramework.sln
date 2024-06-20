@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.8.34316.72
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FEventSourceGenerator", "FEventSourceGenerator\FEventSourceGenerator.csproj", "{CA527988-A0F7-4C2E-9309-BC2FEE81F704}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FEventSourceGenerator", "RoslynAnalyzers\FEventSourceGenerator\FEventSourceGenerator.csproj", "{CA527988-A0F7-4C2E-9309-BC2FEE81F704}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeRuleAnalyzer", "CodeRuleAnalyzer\CodeRuleAnalyzer.csproj", "{921539B7-6482-44DA-AECF-34DDA5D7D94D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CodeRuleAnalyzer", "RoslynAnalyzers\CodeRuleAnalyzer\CodeRuleAnalyzer.csproj", "{921539B7-6482-44DA-AECF-34DDA5D7D94D}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "UnitTest\UnitTest.csproj", "{C38F6653-A2CF-4296-8080-D3A93A99CDFC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTest", "Test\UnitTest\UnitTest.csproj", "{C38F6653-A2CF-4296-8080-D3A93A99CDFC}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FFramework.CoreLibRef", "FFramework.Core\FFramework.CoreLibRef.csproj", "{2780E712-4623-475D-A297-2480A81D0025}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModuleStaticSourceGenerator", "ModuleStaticSourceGenerator\ModuleStaticSourceGenerator.csproj", "{874A0931-72CE-40D6-843A-63704AA82F81}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModuleStaticSourceGenerator", "RoslynAnalyzers\ModuleStaticSourceGenerator\ModuleStaticSourceGenerator.csproj", "{874A0931-72CE-40D6-843A-63704AA82F81}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ThirdParty", "ThirdParty", "{751F188C-6EBC-4EF5-BC6F-6B338D5DDD2E}"
 EndProject
@@ -31,7 +31,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryPack.Streaming", "Thi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MemoryPack.UnityShims", "ThirdParty\MemoryPack\src\MemoryPack.UnityShims\MemoryPack.UnityShims.csproj", "{B8D6813F-2998-4768-B8DE-6703AA8DA0E4}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynLib", "RoslynLib\RoslynLib.csproj", "{4EA2E898-9136-41E9-8143-490BB37F6F6C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RoslynLib", "RoslynAnalyzers\RoslynLib\RoslynLib.csproj", "{4EA2E898-9136-41E9-8143-490BB37F6F6C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

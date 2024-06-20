@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace FFramework
 {
-    public class UnityViewModule : ViewModuleBase, IModule
+    public class UnityViewModule : ViewModule, IModule
     {
 
         UnityResourceModule m_UnityResourceModule;
@@ -17,7 +17,7 @@ namespace FFramework
 
         protected override void OnUnloadViewAsset(IView view)
         {
-            GameObject.Destroy(((View)view).gameObject);
+            GameObject.Destroy(((ViewBase)view).gameObject);
         }
 
         void IModule.OnCreate(object moduleParameter)

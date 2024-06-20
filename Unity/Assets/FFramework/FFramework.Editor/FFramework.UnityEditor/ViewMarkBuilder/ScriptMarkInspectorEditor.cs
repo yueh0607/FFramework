@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using UnityEditor;
 using UnityEngine;
 
+
 namespace FFramework.ViewMark.Editor
 {
 
@@ -23,13 +24,14 @@ namespace FFramework.ViewMark.Editor
         SerializedProperty viewNameSpace;
         SerializedProperty viewBaseType;
         SerializedProperty viewDescription;
+        SerializedProperty generateName;
 
         //能作为View基类的全部类
         IEnumerable<Type> viewTypes = null;
         static string[] viewTypesString;
 
         //全部组件（不含ScriptMark）
-        List<Component> components;
+        List<UnityEngine.Component> components;
         List<string> componentsString;
         List<string> componentsStringUnique;
 
@@ -56,9 +58,11 @@ namespace FFramework.ViewMark.Editor
             //描述
             viewDescription = serializedObject.FindProperty($"{nameof(ScriptMark.ViewDescription)}");
 
+            generateName = serializedObject.FindProperty($"{nameof(ScriptMark.GenerateName)}");
+
             //此物体的全部组件（不含ScriptMark）
-            components = GetRoot()
-                .GetComponents<Component>()
+            components = GetTargetGameObject()
+                .GetComponents<UnityEngine.Component>()
                 .ToList();
             components.RemoveAll((x) => x.GetType() == typeof(ScriptMark));
             componentsString = components
@@ -78,7 +82,7 @@ namespace FFramework.ViewMark.Editor
             //获取View基类
             if (viewTypes == null)
             {
-                viewTypes = typeof(View)
+                viewTypes = typeof(ViewBase)
                    .GetSubclassesOfIncludeThis((x) => x.GetCustomAttribute<ViewBaseAttribute>() != null && !x.IsGenericType);
                 viewTypesString = viewTypes
                     .Select((x) => x.GetDisplayName())
@@ -103,19 +107,12 @@ namespace FFramework.ViewMark.Editor
                     .Distinct()
                     .ToList();
 
-            //Debug.Log("OnEnable");
-            //更新初始View名称
-            if (viewName.stringValue == string.Empty)
-            {
-                viewName.stringValue = GetRoot().name;
-            }
 
-
-            GameObject parent = GetRoot();
-            do
+            GameObject parent = GetTargetGameObject();
+            rootGameObject = parent;
+            while (parent.transform.parent != null)
             {
-                parent = parent.transform.parent?.gameObject;
-                if (parent == null) break;
+                parent = parent.transform.parent.gameObject;
                 if (parent.GetComponent<ScriptMark>() != null)
                 {
                     isRootMark = false;
@@ -123,7 +120,7 @@ namespace FFramework.ViewMark.Editor
                     break;
                 }
             }
-            while (parent != null);
+
         }
 
 
@@ -135,13 +132,41 @@ namespace FFramework.ViewMark.Editor
         private Vector2 scrollPosition;
         public override void OnInspectorGUI()
         {
+            bool hasError = false;
             serializedObject.Update();
+
+
+
             if (EditorApplication.isPlaying)
             {
                 EditorGUILayout.HelpBox("Only allow editing outside of runtime", MessageType.Info);
                 return;
             }
-            bool hasError = false;
+            generateName.stringValue = EditorGUILayout.TextField("UniqueName", generateName.stringValue);
+
+            IEnumerable<string> uniqueNames = GetMarks(rootGameObject).Select((x) => x.GenerateName);
+            HashSet<string> hashNames = new HashSet<string>();
+            foreach (var name in uniqueNames)
+            {
+                if (!hashNames.Add(name))
+                {
+                    EditorGUILayout.HelpBox("Duplicate UniqueName!", MessageType.Error);
+                    hasError = true;
+                }
+            }
+
+            if (!NameValidUtils.IsValid(CodeElementType.Variable, generateName.stringValue))
+            {
+                EditorGUILayout.HelpBox($"Naming rules do not comply with pattern string", MessageType.Error);
+                hasError = true;
+            }
+
+
+
+
+            EditorGUILayout.Space(20);
+
+
             GUI.color = Color.green;
             if (GUILayout.Button("Add"))
             {
@@ -172,7 +197,7 @@ namespace FFramework.ViewMark.Editor
 
                 SerializedProperty elementComponent = buildComponents.GetArrayElementAtIndex(i);
                 SerializedProperty elementProperty = buildProperties.GetArrayElementAtIndex(i);
-                Component buildComponent = (Component)elementComponent.objectReferenceValue;
+                UnityEngine.Component buildComponent = (UnityEngine.Component)elementComponent.objectReferenceValue;
                 if (buildComponent == null)
                 {
                     buildComponents.DeleteArrayElementAtIndex(i);
@@ -268,17 +293,20 @@ namespace FFramework.ViewMark.Editor
             }
             EditorGUILayout.EndScrollView();
 
+
+
             if (!isRootMark)
-            {
-                serializedObject.ApplyModifiedProperties();
-                return;
-            }
-            else if (rootGameObject != null)
             {
                 if (GUILayout.Button("Focus Root"))
                     EditorGUIUtility.PingObject(rootGameObject);
                 serializedObject.ApplyModifiedProperties();
+
                 return;
+            }
+            else
+            {
+                serializedObject.ApplyModifiedProperties();
+
             }
 
             GUILayout.Space(10);
@@ -290,15 +318,17 @@ namespace FFramework.ViewMark.Editor
             viewPath.stringValue = tempPath;
             if (!EditorPathUtils.DirectoryExist(EPathType.AssetPath, viewPath.stringValue))
             {
-                EditorGUILayout.HelpBox("不是有效的目录", MessageType.Error);
+                EditorGUILayout.HelpBox("This path is invalid", MessageType.Error);
+                hasError = true;
             }
 
             viewName.stringValue = EditorGUILayout.TextField(new GUIContent("ViewName"), viewName.stringValue);
-            if (viewName.stringValue == string.Empty)
+            if (!NameValidUtils.IsValid(CodeElementType.Class,viewName.stringValue))
             {
-                EditorGUILayout.HelpBox("不是有效的名称", MessageType.Error);
+                EditorGUILayout.HelpBox("This name is invalid", MessageType.Error);
+                hasError = true;
             }
-            
+
 
 
             viewBaseTypeIndex = EditorGUILayout.Popup("Base", viewBaseTypeIndex, viewTypesString);
@@ -313,7 +343,7 @@ namespace FFramework.ViewMark.Editor
             {
                 if (hasError)
                 {
-                    EditorUtility.DisplayDialog("Error", "Binding the same type is not allowed", "OK");
+                    EditorUtility.DisplayDialog("Error", "Please fix the error according to the prompts and generate it", "OK");
                     return;
                 }
                 Generate();
@@ -332,7 +362,7 @@ namespace FFramework.ViewMark.Editor
             if (!EditorPathUtils.DirectoryExist(EPathType.AssetPath, viewPath.stringValue))
                 return;
 
-            var marks = GetMarks(GetRoot());
+            var marks = GetMarks(GetTargetGameObject());
             string className = viewName.stringValue;
 
             string viewCode = BuildViewCode(marks, viewNameSpace.stringValue, className, true);
@@ -363,30 +393,37 @@ namespace FFramework.ViewMark.Editor
             {
                 for (int i = 0; i < mark.buildComponents.Count; i++)
                 {
-                    Component com = mark.buildComponents[i];
+                    //获取当前组件和组件类型
+                    UnityEngine.Component com = mark.buildComponents[i];
                     Type comType = com.GetType();
+
                     //原本的物体名
                     string originGameObjectName = com.gameObject.name;
+                    //正则模式串
                     string pattern = "[^a-zA-Z0-9_\u4e00-\u9fa5]";
-                    //格式化物体名
+
+                    //格式化物体名到允许的格式上
                     string gameObjectName = Regex.Replace(originGameObjectName, pattern, "_");
+                    //用户指定的名字
+                    string uniqueName = mark.GenerateName;
 
                     //组件是第X个重复的
                     int comIndex = com.gameObject.GetComponents(comType).ToList().IndexOf(com) + 1;
 
                     //组件属性构建
                     string componentField =
-                    $"public {comType.FullName} @{gameObjectName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} {{ get; private set; }} = default;";
+                    $"public {comType.FullName} @{uniqueName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} {{ get; private set; }} = null;";
 
                     componentFieldsString.Add(componentField);
 
                     string componentInit = string.Empty;
+
                     //如果这个标记是根标记
-                    if (mark.gameObject == GetRoot())
+                    if (mark.gameObject == GetTargetGameObject())
                     {
                         //组件初始化
                         componentInit =
-                            $"@{gameObjectName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} = this.gameObject.GetComponent<{com.GetType().FullName}>();";
+                            $"@{uniqueName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} = this.gameObject.GetComponent<{com.GetType().FullName}>();";
 
                     }
                     else
@@ -395,13 +432,13 @@ namespace FFramework.ViewMark.Editor
                         Transform cur = com.transform;
                         string findPath = cur.gameObject.name;
                         //如果当前不是第一层子物体，则构建物体路径
-                        while (cur.parent.gameObject != GetRoot())
+                        while (cur.parent.gameObject != GetTargetGameObject())
                         {
                             findPath = $"{cur.parent.gameObject.name}/" + findPath;
                             cur = cur.parent;
                         }
                         componentInit =
-                            $"@{gameObjectName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} = transform.Find(@\"{findPath}\").GetComponent<{com.GetType().FullName}>();";
+                            $"@{uniqueName}_{comType.Name}{(comIndex > 1 ? $"_{comIndex}" : "")} = transform.Find(@\"{findPath}\").GetComponent<{com.GetType().FullName}>();";
 
                     }
                     componentFindString.Add(componentInit);
@@ -412,10 +449,10 @@ namespace FFramework.ViewMark.Editor
                     {
                         var memberType = GetFieldOrPropertyTypeByName(property, com);
                         string filed =
-                            $"public {nameof(FFramework.BindableProperty<int>)}<{memberType.FullName}> @{gameObjectName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")}_{property}_{property} {{get;set;}}=default;";
+                            $"public {nameof(FFramework.BindableProperty<int>)}<{memberType.FullName}> @{uniqueName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")}_{property}_{property} {{get;set;}}=default;";
 
                         string init =
-                            $"@{gameObjectName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")}_{property} = new {nameof(BindableProperty<int>)}<{memberType.FullName}>(@{gameObjectName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")},(y)=>(({com.GetType().FullName})y).{property},(y,x)=>(({com.GetType().FullName})y).{property}=x);";
+                            $"@{uniqueName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")}_{property} = new {nameof(BindableProperty<int>)}<{memberType.FullName}>(@{uniqueName}_{com.GetType().Name}{(comIndex > 1 ? $"_{comIndex}" : "")},(y)=>(({com.GetType().FullName})y).{property},(y,x)=>(({com.GetType().FullName})y).{property}=x);";
 
                         componentFieldsString.Add(filed);
                         componentFindString.Add(init);
@@ -426,7 +463,7 @@ namespace FFramework.ViewMark.Editor
 
 
             string model =
- @$"/*******************************************************
+        @$"/*******************************************************
  * Code Generated By {nameof(FFramework)}
  * DateTime : #DATETIME#
  * UVersion : #VERSION#
@@ -609,7 +646,7 @@ namespace #NAMESPACE#
             return fi?.FieldType ?? pi?.PropertyType;
         }
 
-        public GameObject GetRoot()
+        public GameObject GetTargetGameObject()
         {
             return ((ScriptMark)serializedObject.targetObject).gameObject;
         }

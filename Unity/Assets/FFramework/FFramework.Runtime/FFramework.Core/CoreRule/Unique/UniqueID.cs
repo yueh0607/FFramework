@@ -4,16 +4,16 @@ namespace FFramework
 {
     public class UniqueID 
     {
-        private long m_NextID = long.MaxValue;
+        private long m_NextID;
         
-        public UniqueID()
+        public UniqueID(long startId)
         {
-
+            m_NextID = startId;
         }
 
         public long GetNextID()
         {
-            return m_NextID--;
+            return m_NextID++;
         }
 
     }
