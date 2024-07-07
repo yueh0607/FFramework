@@ -37,6 +37,12 @@ namespace FFramework
             string pattern = "[^a-zA-Z0-9_\u4e00-\u9fa5]";
             return Regex.Replace(name, pattern, string.Empty);
         }
+
+
+
+
+
+
 #endif
 
     }

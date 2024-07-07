@@ -62,7 +62,7 @@ namespace FFramework.ViewMark.Editor
         private void DrawPrefabRootObjects()
         {
             // 只有在没有缓存的情况下或者刷新时重新计算
-            if (prefabObjectsWithScriptMark.Count == 0)
+            if (prefabObjectsWithScriptMark.Count  == 0)
             {
                 CachePrefabsWithScriptMark();
             }

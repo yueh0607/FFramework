@@ -25,10 +25,6 @@ public class TestLog : MonoBehaviour
             Debug.Log($"从主线程Post到的线程ID: {Thread.CurrentThread.ManagedThreadId}");
         }, null);
 
- 
-     
-
-
     }
 
 

@@ -11,6 +11,7 @@ namespace FFramework
 
         internal IModel InternalGetModel(Type type,long id = 0)
         {
+            if (!typeof(IModel).IsAssignableFrom(type)) return null;
             KeyValuePair<Type,long> key = new KeyValuePair<Type,long>(type,id);
             if (m_GlobalModel.TryGetValue(key, out IModel existedModel))
             {
