@@ -11,8 +11,15 @@ using Debug = UnityEngine.Debug;
 public class TestLog : MonoBehaviour
 
 {
-
-
+    class B
+    {
+        int a;
+    }
+    struct A
+    {
+        string b;
+        int a;
+    }
 
   
 

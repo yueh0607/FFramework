@@ -16,6 +16,13 @@
             "BundleID": 0
         },
         {
+            "Address": "测试物体",
+            "AssetPath": "Assets/Arts/Prefabs/测试物体.prefab",
+            "AssetGUID": "e32bf35c831fadb4cb7267419994062f",
+            "AssetTags": [],
+            "BundleID": 0
+        },
+        {
             "Address": "SampleScene",
             "AssetPath": "Assets/Scenes/HotUpdate/SampleScene.unity",
             "AssetGUID": "9fc0d4010bbf28b4594072e72b8655ab",
@@ -29,7 +36,7 @@
             "UnityCRC": 0,
             "FileHash": "6e0df5020044a1f1b2ed59f726d6a6fb",
             "FileCRC": "00000000",
-            "FileSize": 4980,
+            "FileSize": 9127,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []
@@ -39,7 +46,7 @@
             "UnityCRC": 0,
             "FileHash": "83191a9cd939e2761828a7f47208fef3",
             "FileCRC": "00000000",
-            "FileSize": 12187,
+            "FileSize": 14592,
             "Encrypted": false,
             "Tags": [],
             "DependIDs": []

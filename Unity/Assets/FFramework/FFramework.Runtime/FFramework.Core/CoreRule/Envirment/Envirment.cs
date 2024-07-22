@@ -143,6 +143,11 @@ namespace FFramework
 
     }
 
+    public abstract partial class Envirment
+    {
+        
+    }
+
 
 
     public abstract partial class Envirment

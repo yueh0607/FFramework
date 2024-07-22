@@ -5,6 +5,7 @@ namespace FFramework
 {
     public abstract class Entity : FUnit, IEntity
     {
+        public Branch Branch { get; internal set; } = null;
 
         public Entity()
         {

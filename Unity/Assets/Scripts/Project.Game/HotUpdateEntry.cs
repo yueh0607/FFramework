@@ -4,26 +4,28 @@ using System;
 using System.Threading.Tasks;
 using UnityEngine;
 
+public partial class TestInject
+{
+    [Inject]
+    public int a = 0;
+}
+
 public static class HotUpdateEntry
 {
 
+    
+
     static async FTask Test()
     {
+        Scope scope = new Scope();
+        scope.Register<int>(10);
 
+        TestInject a = new TestInject();
+        a.Inject();
 
-        await FTask.DelaySeconds(3);
-        Debug.Log("1");
+        await FTask.DelaySeconds(1);
 
-
-        await Task.Run(async () =>
-        {
-            await Task.Delay(3000);
-            //throw new System.Exception("主动抛出的异常");
-        }).ToFTask();
-
-
-        await FTask.DelaySeconds(3);
-        Debug.Log("3");
+        Debug.Log(a.a);
     }
 
     static FCancellationToken token = new FCancellationToken();

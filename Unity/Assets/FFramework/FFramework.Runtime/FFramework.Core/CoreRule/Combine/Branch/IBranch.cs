@@ -3,10 +3,8 @@ using System.Collections.Generic;
 
 namespace FFramework
 {
-    public interface IBranch : IEnumerable, IEnumerable<Entity>
+    public interface IBranch
     {
-        void AddChild(IEntity entity);
-
-        void RemoveChild(IEntity entity);
+        
     }
 }

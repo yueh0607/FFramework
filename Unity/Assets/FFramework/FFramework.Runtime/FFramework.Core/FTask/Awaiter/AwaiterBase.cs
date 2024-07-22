@@ -154,7 +154,7 @@ namespace FFramework
 
         protected void OnGetResult()
         {
-            if (m_ExceoptionInfo != null) UnityEngine.Debug.LogError(m_ExceoptionInfo.SourceException.Message);
+            if (m_ExceoptionInfo != null) FLoger.LogError(m_ExceoptionInfo.SourceException.Message);
             m_ExceoptionInfo?.Throw();
 
         }
