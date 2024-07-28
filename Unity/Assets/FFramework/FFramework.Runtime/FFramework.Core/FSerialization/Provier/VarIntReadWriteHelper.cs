@@ -2,7 +2,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
-namespace FFramework
+namespace FFramework.Serialization.Binary
 {
     internal static class VarIntTypeCode
     {
@@ -20,923 +20,349 @@ namespace FFramework
     }
 
 
-    public sealed partial class VarIntReadWriteHelper
+    public static partial class VarIntReadWriteHelper
     {
         private static int TypeCodeSize;
         static VarIntReadWriteHelper()
         {
             TypeCodeSize = Unsafe.SizeOf<sbyte>();
         }
+        static void WriteTypeCode(ref DynamicSequence sequence, SByte typeCode)
+        {
+            ReadWriteUtil.Write<SByte>(ref sequence, typeCode);
+        }
 
-        public bool Write(Byte value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, Byte value)
         {
             if (value <= VarIntTypeCode.MaxSingleValue)
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, (sbyte)value);
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, (SByte)value);
             }
             else
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.Byte);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.Byte);
+                ReadWriteUtil.Write<Byte>(ref dst, value);
             }
         }
 
-
-        public bool Write(SByte value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, SByte value)
         {
             if (VarIntTypeCode.MinSingleValue <= value)
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, value);
-
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, value);
             }
             else
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.SByte);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.SByte);
+                ReadWriteUtil.Write<SByte>(ref dst, value);
             }
         }
 
-        public bool Write(Int16 value, Span<byte> dst)
+
+        public static void Write(ref DynamicSequence dst, Int16 value)
         {
             if (VarIntTypeCode.MinSingleValue <= value)
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, (sbyte)value);
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
             }
             else
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.Int16);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.Int16);
+                ReadWriteUtil.Write<Int16>(ref dst, value);
             }
         }
 
-        public bool Write(UInt16 value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, UInt16 value)
         {
             if (value <= VarIntTypeCode.MaxSingleValue)
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, (sbyte)value);
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
             }
             else
             {
-                bool writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt16);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-
-                return writeResult;
-
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt16);
+                ReadWriteUtil.Write<UInt16>(ref dst, value);
             }
         }
 
-        public bool Write(Int32 value, Span<byte> dst)
-        {
-            bool writeResult;
 
+        public static void Write(ref DynamicSequence dst, Int32 value)
+        {
             if (0 <= value)
             {
                 if (value <= VarIntTypeCode.MaxSingleValue)
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, (sbyte)value);
-                    return writeResult;
+                    ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
                 }
                 else if (value <= Int16.MaxValue)
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int16);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int16)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int16);
+                    ReadWriteUtil.Write<Int16>(ref dst, (Int16)value);
                 }
                 else
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int32);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int32)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int32);
+                    ReadWriteUtil.Write<Int32>(ref dst, (Int32)value);
                 }
             }
             else
             {
                 if (VarIntTypeCode.MinSingleValue <= value)
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, (sbyte)value);
-                    return writeResult;
+                    ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
                 }
                 else if (sbyte.MinValue <= value)
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.SByte);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dataDst, (SByte)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.SByte);
+                    ReadWriteUtil.Write<SByte>(ref dst, (SByte)value);
                 }
                 else if (short.MinValue <= value)
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int16);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int16)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int16);
+                    ReadWriteUtil.Write<Int16>(ref dst, (Int16)value);
                 }
                 else
                 {
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int32);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int32)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int32);
+                    ReadWriteUtil.Write<Int32>(ref dst, (Int32)value);
                 }
             }
         }
 
 
-        public bool Write(UInt32 value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, UInt32 value)
         {
-            bool writeResult;
-
             if (value <= VarIntTypeCode.MaxSingleValue)
             {
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, (sbyte)value);
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
             }
             else if (value <= UInt16.MaxValue)
             {
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt16);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                    .Write(dataDst, (UInt16)value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt16);
+                ReadWriteUtil.Write<UInt16>(ref dst, (UInt16)value);
             }
             else
             {
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt32);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt32ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt32);
+                ReadWriteUtil.Write<UInt32>(ref dst, value);
             }
         }
 
 
-        public bool Write(Int64 value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, Int64 value)
         {
-            bool writeResult;
-
             if (0 <= value)
             {
                 if (value <= VarIntTypeCode.MaxSingleValue)
                 {
-                    // Write as sbyte
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, (sbyte)value);
-                    return writeResult;
+                    ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
                 }
                 else if (value <= Int16.MaxValue)
                 {
-                    // Write type code and value as Int16
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int16);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int16)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int16);
+                    ReadWriteUtil.Write<Int16>(ref dst, (Int16)value);
                 }
                 else if (value <= Int32.MaxValue)
                 {
-                    // Write type code and value as Int32
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int32);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int32)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int32);
+                    ReadWriteUtil.Write<Int32>(ref dst, (Int32)value);
                 }
                 else
                 {
-                    // Write type code and value as Int64
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int64);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Write(dataDst, value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int64);
+                    ReadWriteUtil.Write<Int64>(ref dst, value);
                 }
             }
             else
             {
                 if (VarIntTypeCode.MinSingleValue <= value)
                 {
-                    // Write as sbyte
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, (sbyte)value);
-                    return writeResult;
+                    ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
                 }
                 else if (sbyte.MinValue <= value)
                 {
-                    // Write type code and value as SByte
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.SByte);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dataDst, (SByte)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.SByte);
+                    ReadWriteUtil.Write<SByte>(ref dst, (SByte)value);
                 }
                 else if (short.MinValue <= value)
                 {
-                    // Write type code and value as Int16
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int16);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int16)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int16);
+                    ReadWriteUtil.Write<Int16>(ref dst, (Int16)value);
                 }
                 else if (int.MinValue <= value)
                 {
-                    // Write type code and value as Int32
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int32);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Write(dataDst, (Int32)value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int32);
+                    ReadWriteUtil.Write<Int32>(ref dst, (Int32)value);
                 }
                 else
                 {
-                    // Write type code and value as Int64
-                    writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Write(dst, VarIntTypeCode.Int64);
-
-                    if (!writeResult) return writeResult;
-
-                    Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                    writeResult = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Write(dataDst, value);
-
-                    return writeResult;
+                    WriteTypeCode(ref dst, VarIntTypeCode.Int64);
+                    ReadWriteUtil.Write<Int64>(ref dst, value);
                 }
             }
         }
 
-
-        public bool Write(UInt64 value, Span<byte> dst)
+        public static void Write(ref DynamicSequence dst, UInt64 value)
         {
-            bool writeResult;
-
             if (value <= VarIntTypeCode.MaxSingleValue)
             {
-                // Write as sbyte
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, (sbyte)value);
-                return writeResult;
+                ReadWriteUtil.Write<SByte>(ref dst, (sbyte)value);
             }
             else if (value <= UInt16.MaxValue)
             {
-                // Write type code and value as UInt16
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt16);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                    .Write(dataDst, (UInt16)value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt16);
+                ReadWriteUtil.Write<UInt16>(ref dst, (UInt16)value);
             }
             else if (value <= UInt32.MaxValue)
             {
-                // Write type code and value as UInt32
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt32);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt32ReadWriteProvider>.Instance
-                    .Write(dataDst, (UInt32)value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt32);
+                ReadWriteUtil.Write<UInt32>(ref dst, (UInt32)value);
             }
             else
             {
-                // Write type code and value as UInt64
-                writeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                    .Write(dst, VarIntTypeCode.UInt64);
-
-                if (!writeResult) return writeResult;
-
-                Span<byte> dataDst = dst.Slice(TypeCodeSize);
-                writeResult = ThreadSingletonProperty<UInt64ReadWriteProvider>.Instance
-                    .Write(dataDst, value);
-
-                return writeResult;
+                WriteTypeCode(ref dst, VarIntTypeCode.UInt64);
+                ReadWriteUtil.Write<UInt64>(ref dst, value);
             }
         }
-
-
-
-
-        public bool ReadByte(ReadOnlySpan<byte> src, out Byte value)
+        public static Byte ReadByte(ref DynamicSequence src)
         {
-            bool readTypeCodeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                .Read(src, out sbyte typeCode);
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-            if (!readTypeCodeResult)
+            return typeCode switch
             {
-                value = default;
-                return false;
-            }
-
-            switch (typeCode)
-            {
-                case VarIntTypeCode.Byte:
-                    bool readByteResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out byte byteValue);
-                    if (readByteResult)
-                    {
-                        value = byteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.SByte:
-                    bool readSByteResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out sbyte sbyteValue);
-                    if (readSByteResult)
-                    {
-                        value = (byte)sbyteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt16:
-                    bool readUInt16Result = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ushort uint16Value);
-                    if (readUInt16Result)
-                    {
-                        if (uint16Value <= byte.MaxValue)
-                        {
-                            value = (byte)uint16Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt32:
-                    bool readUInt32Result = ThreadSingletonProperty<UInt32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out uint uint32Value);
-                    if (readUInt32Result)
-                    {
-                        if (uint32Value <= byte.MaxValue)
-                        {
-                            value = (byte)uint32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt64:
-                    bool readUInt64Result = ThreadSingletonProperty<UInt64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ulong uint64Value);
-                    if (readUInt64Result)
-                    {
-                        if (uint64Value <= byte.MaxValue)
-                        {
-                            value = (byte)uint64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int16:
-                    bool readInt16Result = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out short int16Value);
-                    if (readInt16Result)
-                    {
-                        if (int16Value >= byte.MinValue && int16Value <= byte.MaxValue)
-                        {
-                            value = (byte)int16Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int32:
-                    bool readInt32Result = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out int int32Value);
-                    if (readInt32Result)
-                    {
-                        if (int32Value >= byte.MinValue && int32Value <= byte.MaxValue)
-                        {
-                            value = (byte)int32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int64:
-                    bool readInt64Result = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out long int64Value);
-                    if (readInt64Result)
-                    {
-                        if (int64Value >= byte.MinValue && int64Value <= byte.MaxValue)
-                        {
-                            value = (byte)int64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                default:
-                    if (typeCode >= 0)
-                    {
-                        value = (byte)typeCode;
-                        return true;
-                    }
-                    break;
-            }
-
-            value = default;
-            return false;
+                VarIntTypeCode.Byte => ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => checked((Byte)ReadWriteUtil.Read<SByte>(ref src)),
+                VarIntTypeCode.UInt16 => checked((Byte)ReadWriteUtil.Read<UInt16>(ref src)),
+                VarIntTypeCode.UInt32 => checked((Byte)ReadWriteUtil.Read<UInt32>(ref src)),
+                VarIntTypeCode.UInt64 => checked((Byte)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int16 => checked((Byte)ReadWriteUtil.Read<Int16>(ref src)),
+                VarIntTypeCode.Int32 => checked((Byte)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.Int64 => checked((Byte)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((Byte)typeCode),
+            };
         }
 
-        public bool ReadUInt16(ReadOnlySpan<byte> src, out UInt16 value)
+        public static SByte ReadSByte(ref DynamicSequence src)
         {
-            bool readTypeCodeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                .Read(src, out sbyte typeCode);
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-            if (!readTypeCodeResult)
+            return typeCode switch
             {
-                value = default;
-                return false;
-            }
-
-            switch (typeCode)
-            {
-                case VarIntTypeCode.Byte:
-                    bool readByteResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out byte byteValue);
-                    if (readByteResult)
-                    {
-                        value = byteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt16:
-                    bool readUInt16Result = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ushort uint16Value);
-                    if (readUInt16Result)
-                    {
-                        value = uint16Value;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt32:
-                    bool readUInt32Result = ThreadSingletonProperty<UInt32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out uint uint32Value);
-                    if (readUInt32Result)
-                    {
-                        if (uint32Value <= ushort.MaxValue)
-                        {
-                            value = (ushort)uint32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt64:
-                    bool readUInt64Result = ThreadSingletonProperty<UInt64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ulong uint64Value);
-                    if (readUInt64Result)
-                    {
-                        if (uint64Value <= ushort.MaxValue)
-                        {
-                            value = (ushort)uint64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int16:
-                    bool readInt16Result = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out short int16Value);
-                    if (readInt16Result)
-                    {
-                        if (int16Value >= 0 && int16Value <= ushort.MaxValue)
-                        {
-                            value = (ushort)int16Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int32:
-                    bool readInt32Result = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out int int32Value);
-                    if (readInt32Result)
-                    {
-                        if (int32Value >= 0 && int32Value <= ushort.MaxValue)
-                        {
-                            value = (ushort)int32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int64:
-                    bool readInt64Result = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out long int64Value);
-                    if (readInt64Result)
-                    {
-                        if (int64Value >= 0 && int64Value <= ushort.MaxValue)
-                        {
-                            value = (ushort)int64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                default:
-                    if (typeCode >= 0 && typeCode <= ushort.MaxValue)
-                    {
-                        value = (ushort)typeCode;
-                        return true;
-                    }
-                    break;
-            }
-
-            value = default;
-            return false;
+                VarIntTypeCode.Byte => checked((SByte)ReadWriteUtil.Read<Byte>(ref src)),
+                VarIntTypeCode.SByte => ReadWriteUtil.Read<SByte>(ref src),
+                VarIntTypeCode.UInt16 => checked((SByte)ReadWriteUtil.Read<UInt16>(ref src)),
+                VarIntTypeCode.UInt32 => checked((SByte)ReadWriteUtil.Read<UInt32>(ref src)),
+                VarIntTypeCode.UInt64 => checked((SByte)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int16 => checked((SByte)ReadWriteUtil.Read<Int16>(ref src)),
+                VarIntTypeCode.Int32 => checked((SByte)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.Int64 => checked((SByte)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((SByte)typeCode),
+            };
         }
 
-
-        public bool ReadInt16(ReadOnlySpan<byte> src, out Int16 value)
+        public static UInt16 ReadUInt16(ref DynamicSequence src)
         {
-            bool readTypeCodeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                .Read(src, out sbyte typeCode);
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-            if (!readTypeCodeResult)
+            return typeCode switch
             {
-                value = default;
-                return false;
-            }
-
-            switch (typeCode)
-            {
-                case VarIntTypeCode.Byte:
-                    bool readByteResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out byte byteValue);
-                    if (readByteResult)
-                    {
-                        value = byteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.SByte:
-                    bool readSByteResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out sbyte sbyteValue);
-                    if (readSByteResult)
-                    {
-                        value = sbyteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.Int16:
-                    bool readInt16Result = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out short int16Value);
-                    if (readInt16Result)
-                    {
-                        value = int16Value;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.Int32:
-                    bool readInt32Result = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out int int32Value);
-                    if (readInt32Result)
-                    {
-                        if (int32Value >= short.MinValue && int32Value <= short.MaxValue)
-                        {
-                            value = (short)int32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int64:
-                    bool readInt64Result = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out long int64Value);
-                    if (readInt64Result)
-                    {
-                        if (int64Value >= short.MinValue && int64Value <= short.MaxValue)
-                        {
-                            value = (short)int64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                default:
-                    if (typeCode >= short.MinValue && typeCode <= short.MaxValue)
-                    {
-                        value = (short)typeCode;
-                        return true;
-                    }
-                    break;
-            }
-
-            value = default;
-            return false;
+                VarIntTypeCode.Byte => ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => checked((UInt16)ReadWriteUtil.Read<SByte>(ref src)),
+                VarIntTypeCode.UInt16 => ReadWriteUtil.Read<UInt16>(ref src),
+                VarIntTypeCode.Int16 => checked((UInt16)ReadWriteUtil.Read<Int16>(ref src)),
+                VarIntTypeCode.UInt32 => checked((UInt16)ReadWriteUtil.Read<UInt32>(ref src)),
+                VarIntTypeCode.Int32 => checked((UInt16)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.UInt64 => checked((UInt16)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int64 => checked((UInt16)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((UInt16)typeCode),
+            };
         }
-        public bool ReadUInt32(ReadOnlySpan<byte> src, out UInt32 value)
+
+        public static UInt32 ReadUInt32(ref DynamicSequence src)
         {
-            bool readTypeCodeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                .Read(src, out sbyte typeCode);
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-            if (!readTypeCodeResult)
+            return typeCode switch
             {
-                value = default;
-                return false;
-            }
-
-            switch (typeCode)
-            {
-                case VarIntTypeCode.Byte:
-                    bool readByteResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out byte byteValue);
-                    if (readByteResult)
-                    {
-                        value = byteValue;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt16:
-                    bool readUInt16Result = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ushort uint16Value);
-                    if (readUInt16Result)
-                    {
-                        value = uint16Value;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt32:
-                    bool readUInt32Result = ThreadSingletonProperty<UInt32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out uint uint32Value);
-                    if (readUInt32Result)
-                    {
-                        value = uint32Value;
-                        return true;
-                    }
-                    break;
-
-                case VarIntTypeCode.UInt64:
-                    bool readUInt64Result = ThreadSingletonProperty<UInt64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ulong uint64Value);
-                    if (readUInt64Result)
-                    {
-                        if (uint64Value <= uint.MaxValue)
-                        {
-                            value = (uint)uint64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int16:
-                    bool readInt16Result = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out short int16Value);
-                    if (readInt16Result)
-                    {
-                        if (int16Value >= 0)
-                        {
-                            value = (uint)int16Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int32:
-                    bool readInt32Result = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out int int32Value);
-                    if (readInt32Result)
-                    {
-                        if (int32Value >= 0)
-                        {
-                            value = (uint)int32Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                case VarIntTypeCode.Int64:
-                    bool readInt64Result = ThreadSingletonProperty<Int64ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out long int64Value);
-                    if (readInt64Result)
-                    {
-                        if (int64Value >= 0 && int64Value <= uint.MaxValue)
-                        {
-                            value = (uint)int64Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-                default:
-                    if (typeCode >= 0)
-                    {
-                        value = (uint)typeCode;
-                        return true;
-                    }
-                    break;
-            }
-
-            value = default;
-            return false;
+                VarIntTypeCode.Byte => ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => checked((UInt32)ReadWriteUtil.Read<SByte>(ref src)),
+                VarIntTypeCode.UInt16 => checked((UInt32)ReadWriteUtil.Read<UInt16>(ref src)),
+                VarIntTypeCode.Int16 => checked((UInt32)ReadWriteUtil.Read<Int16>(ref src)),
+                VarIntTypeCode.UInt32 => ReadWriteUtil.Read<UInt32>(ref src),
+                VarIntTypeCode.Int32 => checked((UInt32)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.UInt64 => checked((UInt32)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int64 => checked((UInt32)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((UInt32)typeCode),
+            };
         }
-        public bool ReadInt32(ReadOnlySpan<byte> src, out Int32 value)
+
+        public static Int16 ReadInt16(ref DynamicSequence src)
         {
-            bool readTypeCodeResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                .Read(src, out sbyte typeCode);
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-            if (!readTypeCodeResult)
+            return typeCode switch
             {
-                value = default;
-                return false;
-            }
+                VarIntTypeCode.Byte => (Int16)ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => (Int16)ReadWriteUtil.Read<SByte>(ref src),
+                VarIntTypeCode.Int16 => ReadWriteUtil.Read<Int16>(ref src),
+                VarIntTypeCode.Int32 => checked((Int16)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.Int64 => checked((Int16)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((Int16)typeCode),
+            };
+        }
 
-            switch (typeCode)
+        public static Int32 ReadInt32(ref DynamicSequence src)
+        {
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
+
+            return typeCode switch
             {
-                case VarIntTypeCode.Byte:
-                    bool readByteResult = ThreadSingletonProperty<UInt8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out byte byteValue);
-                    if (readByteResult)
-                    {
-                        value = byteValue;
-                        return true;
-                    }
-                    break;
+                VarIntTypeCode.Byte => (Int32)ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => (Int32)ReadWriteUtil.Read<SByte>(ref src),
+                VarIntTypeCode.UInt16 => (Int32)ReadWriteUtil.Read<UInt16>(ref src),
+                VarIntTypeCode.Int16 => (Int32)ReadWriteUtil.Read<Int16>(ref src),
+                VarIntTypeCode.UInt32 => checked((Int32)ReadWriteUtil.Read<UInt32>(ref src)),
+                VarIntTypeCode.Int32 => ReadWriteUtil.Read<Int32>(ref src),
+                VarIntTypeCode.UInt64 => checked((Int32)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int64 => checked((Int32)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((Int32)typeCode),
+            };
+        }
 
-                case VarIntTypeCode.SByte:
-                    bool readSByteResult = ThreadSingletonProperty<Int8ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out sbyte sbyteValue);
-                    if (readSByteResult)
-                    {
-                        value = sbyteValue;
-                        return true;
-                    }
-                    break;
+        public static Int64 ReadInt64(ref DynamicSequence src)
+        {
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-                case VarIntTypeCode.Int16:
-                    bool readInt16Result = ThreadSingletonProperty<Int16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out short int16Value);
-                    if (readInt16Result)
-                    {
-                        value = int16Value;
-                        return true;
-                    }
-                    break;
+            return typeCode switch
+            {
+                VarIntTypeCode.Byte => (Int64)ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => (Int64)ReadWriteUtil.Read<SByte>(ref src),
+                VarIntTypeCode.UInt16 => (Int64)ReadWriteUtil.Read<UInt16>(ref src),
+                VarIntTypeCode.Int16 => (Int64)ReadWriteUtil.Read<Int16>(ref src),
+                VarIntTypeCode.UInt32 => (Int64)ReadWriteUtil.Read<UInt32>(ref src),
+                VarIntTypeCode.Int32 => (Int64)ReadWriteUtil.Read<Int32>(ref src),
+                VarIntTypeCode.UInt64 => checked((Int64)ReadWriteUtil.Read<UInt64>(ref src)),
+                VarIntTypeCode.Int64 => ReadWriteUtil.Read<Int64>(ref src),
+                _ => checked((Int64)typeCode),
+            };
+        }
 
-                case VarIntTypeCode.Int32:
-                    bool readInt32Result = ThreadSingletonProperty<Int32ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out int int32Value);
-                    if (readInt32Result)
-                    {
-                        value = int32Value;
-                        return true;
-                    }
-                    break;
+        public static UInt64 ReadUInt64(ref DynamicSequence src)
+        {
+            sbyte typeCode = ReadWriteUtil.Read<SByte>(ref src);
 
-
-                case VarIntTypeCode.UInt16:
-                    bool readUInt16Result = ThreadSingletonProperty<UInt16ReadWriteProvider>.Instance
-                        .Read(src.Slice(TypeCodeSize), out ushort uint16Value);
-                    if (readUInt16Result)
-                    {
-                        if (uint16Value >= int.MinValue && uint16Value <= int.MaxValue)
-                        {
-                            value = (int)uint16Value;
-                            return true;
-                        }
-                    }
-                    break;
-
-
-                default:
-                    if (typeCode >= int.MinValue && typeCode <= int.MaxValue)
-                    {
-                        value = (int)typeCode;
-                        return true;
-                    }
-                    break;
-            }
-
-            value = default;
-            return false;
+            return typeCode switch
+            {
+                VarIntTypeCode.Byte => (UInt64)ReadWriteUtil.Read<Byte>(ref src),
+                VarIntTypeCode.SByte => checked((UInt64)ReadWriteUtil.Read<SByte>(ref src)),
+                VarIntTypeCode.UInt16 => (UInt64)ReadWriteUtil.Read<UInt16>(ref src),
+                VarIntTypeCode.Int16 => checked((UInt64)ReadWriteUtil.Read<Int16>(ref src)),
+                VarIntTypeCode.UInt32 => (UInt64)ReadWriteUtil.Read<UInt32>(ref src),
+                VarIntTypeCode.Int32 => checked((UInt64)ReadWriteUtil.Read<Int32>(ref src)),
+                VarIntTypeCode.UInt64 => ReadWriteUtil.Read<UInt64>(ref src),
+                VarIntTypeCode.Int64 => checked((UInt64)ReadWriteUtil.Read<Int64>(ref src)),
+                _ => checked((UInt64)typeCode),
+            };
         }
 
     }

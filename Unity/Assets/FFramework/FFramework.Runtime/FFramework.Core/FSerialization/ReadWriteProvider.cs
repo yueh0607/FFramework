@@ -1,4 +1,5 @@
 using System;
+using System.Buffers;
 using System.IO;
 
 namespace FFramework
@@ -6,9 +7,9 @@ namespace FFramework
     public abstract class ReadWriteProvider<T>
     {
 
-        public abstract bool Write(Span<byte> span, T value);
+        public abstract void Write(DynamicSequence sequence, T value);
 
-        public abstract bool Read(ReadOnlySpan<byte> span, out T value);
+        public abstract T Read(DynamicSequence sequence);
 
     }
 }

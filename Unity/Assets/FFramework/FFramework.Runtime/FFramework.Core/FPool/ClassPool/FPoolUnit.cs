@@ -4,8 +4,7 @@ namespace FFramework
 {
     public abstract class FPoolUnit<T> : FDispoableUnit where T : FPoolUnit<T>
     {
-
-        bool m_ManagedResourceReleased = false;
+        private bool m_ManagedResourceReleased = false;
         protected override void OnReleaseManagedResource()
         {
             m_ManagedResourceReleased = true;

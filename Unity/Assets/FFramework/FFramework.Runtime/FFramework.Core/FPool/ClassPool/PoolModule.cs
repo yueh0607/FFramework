@@ -17,6 +17,7 @@ namespace FFramework
 
             return m_CachePools[type].Get();
         }
+
         public T Get<T>() where T : class
         {
             return (T)InternalGet(typeof(T));

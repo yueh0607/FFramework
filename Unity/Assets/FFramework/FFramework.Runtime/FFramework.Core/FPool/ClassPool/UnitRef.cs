@@ -29,7 +29,7 @@
             return new UnitRef<K>(m_Unit as K);
         }
 
-        public static implicit operator T(UnitRef<T> unitRef)
+        public static explicit operator T(UnitRef<T> unitRef)
         {
             return unitRef.Value;
         }

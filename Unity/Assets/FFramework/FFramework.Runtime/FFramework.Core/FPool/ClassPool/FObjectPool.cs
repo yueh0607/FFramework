@@ -1,10 +1,13 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace FFramework
 {
     public abstract class FObjectPool : FDispoableUnit
     {
         protected Queue m_CachePool = new Queue();
+
 
         public int Count => m_CachePool.Count;
         public abstract object Get();
