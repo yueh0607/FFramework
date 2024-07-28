@@ -11,5 +11,6 @@
 4. YooAsset
 5. HybirdCLR
 6. Luban-LazyLoad
+7. 二进制序列化
 
 
