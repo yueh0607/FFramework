@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 namespace FFramework.Serialization.Binary
 {
-    public static class ReadWriteUtil
+    public static class ReadWiteHelper
     {
         public static T Read<T>(ref DynamicSequence sequence)
         {

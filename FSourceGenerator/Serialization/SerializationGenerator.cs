@@ -48,13 +48,19 @@ public class SerializationGenerator : ISourceGenerator
 
         var serializeMethod = new StringBuilder();
         var deserializeMethod = new StringBuilder();
-
+        var staticConstructor = new StringBuilder();
 
         serializeMethod.AppendLine($"namespace {namespaceName}");
 
         serializeMethod.AppendLine("{");
         serializeMethod.AppendLine($"    public partial class {className}");
         serializeMethod.AppendLine("    {");
+        staticConstructor.AppendLine($"        static {className}()");
+        staticConstructor.AppendLine("        {");
+        staticConstructor.AppendLine("            StaticConstructor();");
+        staticConstructor.AppendLine("        }");
+        staticConstructor.AppendLine($"        static partial void StaticConstructor();");
+
         serializeMethod.AppendLine("        public void Serialize(ref global::FFramework.DynamicSequence sequence)");
         serializeMethod.AppendLine("        {");
 
@@ -119,6 +125,7 @@ public class SerializationGenerator : ISourceGenerator
         deserializeMethod.AppendLine("        }");
 
         string ser = serializeMethod.ToString();
+        serializeMethod.Append(staticConstructor.ToString());
         serializeMethod.Append(deserializeMethod.ToString());
 
         serializeMethod.AppendLine("    }");   //class
